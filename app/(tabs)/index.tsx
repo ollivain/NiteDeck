@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, type DimensionValue } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router, useNavigation } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,80 +10,34 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { MainTabBar } from '@/constants/navigation';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { useSessionStore } from '@/store/session';
 import type { GameType } from '@/data/types';
 
-type Speck = {
-  top?: DimensionValue;
-  bottom?: DimensionValue;
-  left?: DimensionValue;
-  right?: DimensionValue;
-  size: number;
-  opacity: number;
-  rotate: number;
-};
-
 type GameOption = {
   id: GameType;
   title: string;
   description: string;
-  icon: keyof typeof Ionicons.glyphMap;
 };
 
 const SPLASH_MS = 1450;
 let hasSeenLaunchSplash = false;
-
-const SPECKS: Speck[] = [
-  { top: '8%', left: '16%', size: 4, opacity: 0.16, rotate: 22 },
-  { top: '14%', right: '22%', size: 3, opacity: 0.13, rotate: 40 },
-  { top: '24%', left: '8%', size: 4, opacity: 0.1, rotate: -15 },
-  { top: '32%', right: '10%', size: 5, opacity: 0.13, rotate: 18 },
-  { top: '48%', left: '18%', size: 4, opacity: 0.1, rotate: 12 },
-  { bottom: '30%', right: '18%', size: 4, opacity: 0.12, rotate: 20 },
-];
 
 const GAME_OPTIONS: GameOption[] = [
   {
     id: 'classic',
     title: 'Classic',
     description: 'Group prompts, camera moments and chaotic recaps.',
-    icon: 'albums',
   },
   {
     id: 'truth-or-dare',
     title: 'Truth or Dare',
     description: 'Personal truths, bold dares and party-ready chaos.',
-    icon: 'help-buoy',
   },
 ];
 
-function Background() {
-  return (
-    <View style={StyleSheet.absoluteFill}>
-      {SPECKS.map((s, i) => (
-        <View
-          key={i}
-          style={[
-            styles.speck,
-            {
-              top: s.top,
-              bottom: s.bottom,
-              left: s.left,
-              right: s.right,
-              width: s.size,
-              height: s.size,
-              opacity: s.opacity,
-              transform: [{ rotate: `${s.rotate}deg` }],
-            },
-          ]}
-        />
-      ))}
-    </View>
-  );
-}
 
 function DeckMark({ large = false }: { large?: boolean }) {
   return (
@@ -116,9 +70,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
 
     return () => {
       clearTimeout(timer);
-      if (exitTimer) {
-        clearTimeout(exitTimer);
-      }
+      if (exitTimer) clearTimeout(exitTimer);
     };
   }, [contentOffset, onDone, opacity, reduceMotion]);
 
@@ -129,7 +81,6 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Background />
       <Animated.View style={[styles.splashContent, splashStyle]}>
         <DeckMark large />
         <Text style={styles.splashTitle}>NiteDeck</Text>
@@ -139,7 +90,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
           <View style={styles.divider} />
         </View>
         <Text style={styles.splashTagline}>Party games. Drinking games.</Text>
-        <Text style={styles.splashTagline}>Memories you’ll talk about.</Text>
+        <Text style={styles.splashTagline}>{"Memories you'll talk about."}</Text>
       </Animated.View>
     </SafeAreaView>
   );
@@ -191,7 +142,6 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Background />
 
       <Animated.View style={[styles.home, homeStyle]}>
         <ScrollView
@@ -199,6 +149,7 @@ export default function HomeScreen() {
           contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={styles.scrollContent}
         >
+          {/* Hero */}
           <View style={styles.hero}>
             <DeckMark />
 
@@ -218,27 +169,83 @@ export default function HomeScreen() {
             </View>
 
             <Text style={styles.tagline}>Party games. Drinking games.</Text>
-            <Text style={styles.tagline}>Memories you’ll talk about.</Text>
+            <Text style={styles.tagline}>{"Memories you'll talk about."}</Text>
           </View>
 
+          {/* Primary CTA */}
+          <PressableScale
+            onPress={() => router.navigate('/(tabs)/games')}
+            activeOpacity={0.82}
+            pressedScale={0.96}
+            style={styles.ctaButton}
+          >
+            <Ionicons name="wine-outline" size={20} color="#F7F3FF" />
+            <Text style={styles.ctaText}>{"Let's Play"}</Text>
+          </PressableScale>
+
+          {/* Featured Games */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Featured Games</Text>
+            <TouchableOpacity
+              onPress={() => router.navigate('/(tabs)/games')}
+              hitSlop={12}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.viewAll}>View all ›</Text>
+            </TouchableOpacity>
           </View>
 
-          <View style={styles.gameList}>
+          <View style={styles.gameGrid}>
             {GAME_OPTIONS.map(option => (
               <PressableScale
                 key={option.id}
                 onPress={() => handleSelectGame(option.id)}
                 activeOpacity={0.84}
-                pressedScale={0.985}
+                pressedScale={0.975}
                 style={styles.gameCard}
               >
-                <View style={styles.gameCardGlow} />
-                <Text style={styles.gameTitle}>{option.title}</Text>
-                <Text style={styles.gameDescription}>{option.description}</Text>
-                <View style={styles.gameArrow}>
-                  <Ionicons name="chevron-forward" size={18} color="#B9A7FF" />
+                {/* Visual area */}
+                <View style={styles.cardIconArea}>
+                  {option.id === 'classic' ? (
+                    <View style={styles.classicVisual}>
+                      <View style={[styles.miniGameCard, styles.miniGameCardBack]}>
+                        <Text style={styles.miniCardRank}>K</Text>
+                        <Text style={styles.miniCardSuit}>♠</Text>
+                      </View>
+                      <View style={[styles.miniGameCard, styles.miniGameCardFront]}>
+                        <Text style={styles.miniCardRank}>A</Text>
+                        <Text style={styles.miniCardSuit}>♠</Text>
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={styles.todVisual}>
+                      <View style={styles.bubbleLight}>
+                        <Text style={styles.bubbleLightSymbol}>♥</Text>
+                      </View>
+                      <View style={styles.bubbleDark}>
+                        <Text style={styles.bubbleDarkSymbol}>?</Text>
+                      </View>
+                    </View>
+                  )}
+                </View>
+
+                {/* Title */}
+                <Text style={styles.cardTitle} numberOfLines={2}>{option.title}</Text>
+
+                {/* Micro divider */}
+                <View style={styles.cardDividerRow}>
+                  <View style={styles.cardDividerLine} />
+                  <Text style={styles.cardDividerSymbol}>♠</Text>
+                  <View style={styles.cardDividerLine} />
+                </View>
+
+                {/* Description */}
+                <Text style={styles.cardDesc}>{option.description}</Text>
+
+                {/* Players pill */}
+                <View style={styles.cardPlayerPill}>
+                  <Ionicons name="people-outline" size={11} color={Colors.textDim} />
+                  <Text style={styles.cardPlayerText}>2+ players</Text>
                 </View>
               </PressableScale>
             ))}
@@ -253,11 +260,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#050817',
-  },
-  speck: {
-    position: 'absolute',
-    backgroundColor: '#B9A7FF',
-    borderRadius: Radius.full,
   },
   splashContent: {
     flex: 1,
@@ -275,9 +277,11 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.xxxl,
     paddingBottom: 124,
   },
+
+  // Hero
   hero: {
     alignItems: 'center',
-    marginBottom: Spacing.xxl,
+    marginBottom: Spacing.xl,
   },
   deckMark: {
     width: 112,
@@ -348,76 +352,219 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     width: 74,
-    backgroundColor: 'rgba(167, 139, 250, 0.55)',
+    backgroundColor: 'rgba(167, 139, 250, 0.45)',
   },
   splashTagline: {
-    fontSize: 21,
-    fontWeight: '500',
-    color: '#D8D2EA',
-    lineHeight: 30,
+    fontSize: 19,
+    fontWeight: '400',
+    color: Colors.textMuted,
+    lineHeight: 28,
     textAlign: 'center',
   },
   tagline: {
-    fontSize: 20,
-    fontWeight: '500',
-    color: '#D8D2EA',
-    lineHeight: 29,
+    fontSize: 17,
+    fontWeight: '400',
+    color: Colors.textMuted,
+    lineHeight: 26,
     textAlign: 'center',
   },
+
+  // CTA Button
+  ctaButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    backgroundColor: '#7C5CFF',
+    borderRadius: Radius.full,
+    paddingVertical: 16,
+    paddingHorizontal: Spacing.xl,
+    marginBottom: Spacing.xxl,
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.45)',
+    shadowColor: '#7C5CFF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.45,
+    shadowRadius: 14,
+    elevation: 6,
+  },
+  ctaText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#F7F3FF',
+    letterSpacing: 0.3,
+  },
+
+  // Section header
   sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: Spacing.md,
   },
   sectionTitle: {
-    ...Typography.h2,
+    fontSize: 16,
+    fontWeight: '600',
     color: Colors.text,
+    letterSpacing: 0.2,
   },
-  gameList: {
-    gap: Spacing.md,
+  viewAll: {
+    fontSize: 14,
+    color: Colors.accent,
+    fontWeight: '500',
+  },
+
+  // Game grid
+  gameGrid: {
+    flexDirection: 'row',
+    gap: 12,
   },
   gameCard: {
-    borderRadius: Radius.xxl,
+    flex: 1,
+    borderRadius: Radius.xl,
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.22)',
-    backgroundColor: 'rgba(10, 15, 39, 0.9)',
-    padding: Spacing.lg,
+    borderColor: 'rgba(214, 203, 255, 0.16)',
+    backgroundColor: 'rgba(10, 15, 39, 0.92)',
+    padding: Spacing.md,
     overflow: 'hidden',
   },
-  gameCardGlow: {
-    position: 'absolute',
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    backgroundColor: 'rgba(124, 92, 255, 0.16)',
-    top: -80,
-    right: -40,
+  cardIconArea: {
+    height: 76,
+    borderRadius: Radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    backgroundColor: 'rgba(124, 92, 255, 0.05)',
   },
-  gameTitle: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: Colors.text,
-    lineHeight: 32,
-    fontFamily: 'serif',
-    marginBottom: 6,
-  },
-  gameDescription: {
-    maxWidth: '82%',
-    fontSize: 15,
-    color: '#C7C0D8',
-    lineHeight: 22,
-  },
-  gameArrow: {
-    position: 'absolute',
-    right: Spacing.lg,
-    top: Spacing.lg,
-    width: 34,
-    height: 34,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.18)',
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+  classicVisual: {
+    width: 68,
+    height: 52,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  miniGameCard: {
+    position: 'absolute',
+    width: 34,
+    height: 48,
+    borderRadius: 6,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  miniGameCardBack: {
+    backgroundColor: 'rgba(124, 92, 255, 0.20)',
+    borderColor: 'rgba(205, 190, 255, 0.38)',
+    transform: [{ rotate: '9deg' }, { translateX: 11 }],
+  },
+  miniGameCardFront: {
+    backgroundColor: 'rgba(7, 12, 34, 0.92)',
+    borderColor: 'rgba(205, 190, 255, 0.52)',
+    transform: [{ rotate: '-6deg' }, { translateX: -9 }],
+  },
+  miniCardRank: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: 'rgba(231, 224, 255, 0.90)',
+    fontFamily: 'serif',
+    lineHeight: 17,
+  },
+  miniCardSuit: {
+    fontSize: 9,
+    color: 'rgba(205, 190, 255, 0.60)',
+    lineHeight: 11,
+  },
+  todVisual: {
+    width: 68,
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bubbleLight: {
+    position: 'absolute',
+    width: 40,
+    height: 28,
+    borderRadius: 9,
+    backgroundColor: 'rgba(167, 139, 250, 0.20)',
+    borderWidth: 1,
+    borderColor: 'rgba(205, 190, 255, 0.42)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    top: 4,
+    right: 4,
+  },
+  bubbleDark: {
+    position: 'absolute',
+    width: 40,
+    height: 28,
+    borderRadius: 9,
+    backgroundColor: 'rgba(7, 12, 34, 0.92)',
+    borderWidth: 1,
+    borderColor: 'rgba(205, 190, 255, 0.50)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    bottom: 4,
+    left: 4,
+  },
+  bubbleLightSymbol: {
+    fontSize: 12,
+    color: 'rgba(205, 190, 255, 0.72)',
+    lineHeight: 14,
+  },
+  bubbleDarkSymbol: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'rgba(231, 224, 255, 0.88)',
+    fontFamily: 'serif',
+    lineHeight: 17,
+  },
+  cardTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: Colors.text,
+    fontFamily: 'serif',
+    lineHeight: 22,
+    marginBottom: 8,
+  },
+  cardDividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 8,
+  },
+  cardDividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(167, 139, 250, 0.18)',
+  },
+  cardDividerSymbol: {
+    fontSize: 9,
+    color: Colors.textDim,
+  },
+  cardDesc: {
+    fontSize: 12,
+    color: Colors.textMuted,
+    lineHeight: 18,
+    marginBottom: 14,
+  },
+  cardPlayerPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: Radius.full,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.10)',
+  },
+  cardPlayerText: {
+    fontSize: 11,
+    color: Colors.textDim,
+    fontWeight: '500',
+  },
+
   hiddenTabBar: {
     display: 'none',
   },

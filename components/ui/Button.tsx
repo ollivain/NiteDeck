@@ -22,7 +22,7 @@ const variantContainer = {
 } as const;
 
 const variantText = {
-  primary: { color: '#0A0908', fontWeight: '700' as const },
+  primary: { color: '#F7F3FF', fontWeight: '700' as const },
   secondary: { color: Colors.text },
   ghost: { color: Colors.textMuted },
   danger: { color: '#F87171' },

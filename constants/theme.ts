@@ -1,17 +1,19 @@
 export const Colors = {
-  bg: '#0A0908',
-  surface: '#1C1917',
-  surface2: '#292524',
-  border: '#44403C',
-  borderSubtle: '#2C2927',
+  bg: '#050817',
+  surface: 'rgba(10, 15, 39, 0.88)',
+  surface2: 'rgba(16, 22, 48, 0.92)',
+  border: 'rgba(214, 203, 255, 0.18)',
+  borderStrong: 'rgba(214, 203, 255, 0.30)',
+  borderSubtle: 'rgba(214, 203, 255, 0.08)',
 
-  text: '#FAFAF9',
-  textMuted: '#A8A29E',
-  textDim: '#78716C',
+  text: '#F7F3FF',
+  textMuted: '#C7C0D8',
+  textDim: '#8D86A8',
 
-  accent: '#F97316',
-  accentBg: 'rgba(249, 115, 22, 0.15)',
-  accentBorder: 'rgba(249, 115, 22, 0.35)',
+  accent: '#A78BFA',
+  accent2: '#7C5CFF',
+  accentBg: 'rgba(167, 139, 250, 0.12)',
+  accentBorder: 'rgba(167, 139, 250, 0.30)',
 
   modes: {
     chill: {
