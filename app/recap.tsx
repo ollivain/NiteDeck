@@ -32,7 +32,7 @@ import { PressableScale } from '@/components/ui/PressableScale';
 import { AwardCard } from '@/components/recap/AwardCard';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 import { cardsById } from '@/data/cards';
-import type { Mode } from '@/data/types';
+import type { GameType, Mode } from '@/data/types';
 import { useSessionStore } from '@/store/session';
 import type { MediaMoment, Player, PlayedCard } from '@/store/session';
 
@@ -218,13 +218,15 @@ function MediaMomentTile({ moment, onPress, style, moreCount, index = 0 }: Media
 }
 
 type MemoryWallProps = {
+  gameType: GameType | null;
   mediaItems: MediaMoment[];
   onOpenMedia: (index: number) => void;
 };
 
-function MemoryWall({ mediaItems, onOpenMedia }: MemoryWallProps) {
+function MemoryWall({ gameType, mediaItems, onOpenMedia }: MemoryWallProps) {
   const visibleItems = mediaItems.slice(0, 5);
   const moreCount = Math.max(0, mediaItems.length - visibleItems.length);
+  const isTruthOrDare = gameType === 'truth-or-dare';
 
   if (mediaItems.length === 0) {
     return (
@@ -232,9 +234,13 @@ function MemoryWall({ mediaItems, onOpenMedia }: MemoryWallProps) {
         <View style={styles.memoryEmptyIcon}>
           <Ionicons name="camera-outline" size={24} color={Colors.accent} />
         </View>
-        <Text style={styles.memoryEmptyTitle}>No moments captured yet</Text>
+        <Text style={styles.memoryEmptyTitle}>
+          {isTruthOrDare ? 'No memories saved this round.' : 'No moments captured yet'}
+        </Text>
         <Text style={styles.memoryEmptyText}>
-          Camera Moments will turn next night&apos;s recap into a wall worth scrolling.
+          {isTruthOrDare
+            ? 'Photos and videos you save will appear here.'
+            : 'Camera Moments will turn next night&apos;s recap into a wall worth scrolling.'}
         </Text>
       </View>
     );
@@ -307,7 +313,23 @@ function MemoryWall({ mediaItems, onOpenMedia }: MemoryWallProps) {
   );
 }
 
-function buildHighlight(mode: Mode | null, played: PlayedCard[], mediaItems: MediaMoment[]) {
+function buildHighlight(
+  gameType: GameType | null,
+  mode: Mode | null,
+  played: PlayedCard[],
+  mediaItems: MediaMoment[]
+) {
+  if (gameType === 'truth-or-dare') {
+    const completed = played.filter(p => !p.skipped).length;
+    const skipped = played.length - completed;
+    return {
+      icon: 'help-buoy' as const,
+      title: 'ROUND ENERGY',
+      value: skipped > 0 ? 'BRAVE CHOICES' : 'ALL IN',
+      detail: `${completed} completed, ${skipped} skipped across ${played.length} turn${played.length !== 1 ? 's' : ''}`,
+    };
+  }
+
   const cameraOrChaos = played.filter(({ cardId }) => {
     const card = cardsById[cardId];
     return card?.type === 'camera' || card?.type === 'chaos';
@@ -504,6 +526,7 @@ function FullscreenMediaViewer({ mediaItems, isOpen, selectedIndex, onClose, onS
 
 export default function RecapScreen() {
   const players = useSessionStore(s => s.players);
+  const gameType = useSessionStore(s => s.gameType);
   const mode = useSessionStore(s => s.mode);
   const played = useSessionStore(s => s.played);
   const startedAt = useSessionStore(s => s.startedAt);
@@ -520,12 +543,18 @@ export default function RecapScreen() {
   const duration = startedAt && endedAt ? endedAt - startedAt : 0;
   const totalCompleted = played.filter(p => !p.skipped).length;
   const totalSkipped = played.filter(p => p.skipped).length;
+  const isTruthOrDare = gameType === 'truth-or-dare';
+  const heroCount = isTruthOrDare ? played.length : totalCompleted;
+  const heroUnit = isTruthOrDare
+    ? heroCount === 1 ? 'turn' : 'turns'
+    : heroCount === 1 ? 'card' : 'cards';
+  const recapTitle = isTruthOrDare ? 'TRUTH OR DARE RECAP' : 'NIGHT RECAP';
   const modeCfg = mode ? Colors.modes[mode] : null;
-  const heroSub = mode ? HERO_SUBTITLES[mode] : '';
+  const heroSub = isTruthOrDare ? 'Truths told. Dares survived.' : mode ? HERO_SUBTITLES[mode] : '';
   const mediaItems: MediaMoment[] = mediaMoments.length > 0
     ? mediaMoments
     : mediaUris.map((uri, i) => ({ uri, mediaType: 'photo', createdAt: i }));
-  const highlight = buildHighlight(mode, played, mediaItems);
+  const highlight = buildHighlight(gameType, mode, played, mediaItems);
   const awards = computeAwards(players, played);
 
   const playerStats = players
@@ -641,11 +670,11 @@ export default function RecapScreen() {
         </View>
 
         <View style={[styles.heroCard, modeCfg && { borderColor: modeCfg.borderSelected }]}>
-          <Text style={[styles.kicker, modeCfg && { color: modeCfg.primary }]}>NIGHT RECAP</Text>
+          <Text style={[styles.kicker, modeCfg && { color: modeCfg.primary }]}>{recapTitle}</Text>
           <View style={styles.heroRow}>
-            <Text style={styles.heroNum} numberOfLines={1} adjustsFontSizeToFit>{totalCompleted}</Text>
+            <Text style={styles.heroNum} numberOfLines={1} adjustsFontSizeToFit>{heroCount}</Text>
             <Text style={[styles.heroUnit, modeCfg && { color: modeCfg.primary }]}>
-              {totalCompleted === 1 ? 'card' : 'cards'}
+              {heroUnit}
             </Text>
           </View>
           <Text style={styles.heroSub}>{heroSub}</Text>
@@ -658,7 +687,11 @@ export default function RecapScreen() {
         </View>
 
         <View style={styles.statRow}>
-          <StatTile icon="albums-outline" value={played.length} label="CARDS" />
+          <StatTile
+            icon={isTruthOrDare ? 'help-buoy' : 'albums-outline'}
+            value={played.length}
+            label={isTruthOrDare ? 'TURNS' : 'CARDS'}
+          />
           <StatTile icon="play-skip-forward" value={totalSkipped} label="SKIPS" highlight={totalSkipped > 0} />
           <StatTile icon="people" value={players.length} label="PLAYERS" />
           <StatTile icon="time-outline" value={duration > 0 ? formatDuration(duration) : '-'} label="TIME" />
@@ -695,7 +728,7 @@ export default function RecapScreen() {
             </View>
           </View>
 
-          <MemoryWall mediaItems={mediaItems} onOpenMedia={openMedia} />
+          <MemoryWall gameType={gameType} mediaItems={mediaItems} onOpenMedia={openMedia} />
         </View>
 
         <View style={[styles.highlightCard, modeCfg && { borderColor: modeCfg.borderSelected }]}>
