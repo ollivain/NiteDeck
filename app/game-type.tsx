@@ -41,11 +41,6 @@ export default function GameTypeScreen() {
 
   return (
     <Screen scroll style={styles.screen} contentStyle={styles.content}>
-      <View style={StyleSheet.absoluteFill}>
-        <View style={styles.bgGlow} />
-        <View style={styles.bgGlow2} />
-      </View>
-
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={20} color="#D8D2EA" />
@@ -104,24 +99,6 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: Spacing.md,
     paddingBottom: Spacing.xxl,
-  },
-  bgGlow: {
-    position: 'absolute',
-    width: 420,
-    height: 420,
-    borderRadius: 210,
-    backgroundColor: 'rgba(124, 92, 255, 0.14)',
-    top: -210,
-    right: -150,
-  },
-  bgGlow2: {
-    position: 'absolute',
-    width: 340,
-    height: 340,
-    borderRadius: 170,
-    backgroundColor: 'rgba(54, 116, 255, 0.08)',
-    bottom: 20,
-    left: -180,
   },
   header: {
     flexDirection: 'row',

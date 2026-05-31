@@ -14,8 +14,6 @@ const RULES = [
   'Keep it fun, not forced.',
 ] as const;
 
-const RULE_ICONS = ['checkmark-circle-outline', 'play-skip-forward-outline', 'camera-outline', 'sparkles-outline'] as const;
-
 export default function RulesScreen() {
   const players = useSessionStore(s => s.players);
   const gameType = useSessionStore(s => s.gameType);
@@ -64,11 +62,6 @@ export default function RulesScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <View style={styles.bgGlow} />
-        <View style={styles.bgGlow2} />
-      </View>
-
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -82,32 +75,24 @@ export default function RulesScreen() {
           </View>
 
           <View style={styles.titleBlock}>
-            <Text style={styles.kicker}>HOUSE RULES</Text>
-            <Text style={styles.title}>Before the night starts</Text>
-          </View>
-
-          <View style={[styles.rulesPanel, modeCfg && { borderColor: modeCfg.borderSelected }]}>
+            <Text style={styles.kicker}>Before the night starts</Text>
+            <Text style={styles.title}>House Rules</Text>
             {modeCfg ? (
               <View style={[styles.modePill, { backgroundColor: modeCfg.bg, borderColor: modeCfg.borderSelected }]}>
                 <Text style={[styles.modePillText, { color: modeCfg.primary }]}>{modeCfg.name.toUpperCase()}</Text>
               </View>
             ) : null}
+          </View>
 
-            <View style={styles.ruleList}>
-              {RULES.map((rule, index) => (
-                <View key={rule} style={[styles.ruleRow, index === RULES.length - 1 && styles.ruleRowLast]}>
-                  <View
-                    style={[
-                      styles.ruleIcon,
-                      modeCfg && { backgroundColor: modeCfg.bg, borderColor: modeCfg.borderSelected },
-                    ]}
-                  >
-                    <Ionicons name={RULE_ICONS[index]} size={18} color={modeCfg?.primary ?? '#A78BFA'} />
-                  </View>
-                  <Text style={styles.ruleText}>{rule}</Text>
-                </View>
-              ))}
-            </View>
+          <View style={styles.rulesList}>
+            {RULES.map((rule, index) => (
+              <View key={rule} style={[styles.ruleRow, index === RULES.length - 1 && styles.ruleRowLast]}>
+                <Text style={[styles.ruleNum, modeCfg && { color: modeCfg.primary }]}>
+                  {String(index + 1).padStart(2, '0')}
+                </Text>
+                <Text style={styles.ruleText}>{rule}</Text>
+              </View>
+            ))}
           </View>
         </View>
 
@@ -129,24 +114,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#050817',
-  },
-  bgGlow: {
-    position: 'absolute',
-    width: 390,
-    height: 390,
-    borderRadius: 195,
-    backgroundColor: 'rgba(124, 92, 255, 0.14)',
-    top: -180,
-    right: -140,
-  },
-  bgGlow2: {
-    position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: 'rgba(54, 116, 255, 0.08)',
-    bottom: 80,
-    left: -160,
   },
   scroll: {
     flex: 1,
@@ -175,26 +142,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   titleBlock: {
-    marginBottom: Spacing.xxl,
+    marginBottom: Spacing.xl,
+    gap: Spacing.sm,
   },
   kicker: {
-    fontSize: 11,
-    fontWeight: '600',
-    letterSpacing: 1.4,
-    color: '#A78BFA',
-    marginBottom: Spacing.sm,
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#AFA8C8',
   },
   title: {
     ...Typography.h1,
     color: Colors.text,
-  },
-  rulesPanel: {
-    backgroundColor: 'rgba(10, 15, 39, 0.9)',
-    borderRadius: Radius.xxl,
-    borderWidth: 1.5,
-    borderColor: 'rgba(214, 203, 255, 0.18)',
-    padding: Spacing.md,
-    marginBottom: Spacing.lg,
   },
   modePill: {
     alignSelf: 'flex-start',
@@ -202,43 +160,42 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    marginBottom: Spacing.sm,
+    marginTop: 4,
   },
   modePillText: {
     fontSize: 10,
     fontWeight: '900',
     letterSpacing: 1,
   },
-  ruleList: {
-    gap: 0,
+  rulesList: {
+    marginBottom: Spacing.lg,
   },
   ruleRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-    paddingVertical: 15,
+    alignItems: 'flex-start',
+    gap: Spacing.lg,
+    paddingVertical: 20,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(214, 203, 255, 0.08)',
   },
   ruleRowLast: {
     borderBottomWidth: 0,
   },
-  ruleIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: Radius.full,
-    backgroundColor: 'rgba(167, 139, 250, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.25)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  ruleNum: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: '#A78BFA',
+    letterSpacing: 1,
+    width: 22,
+    lineHeight: 26,
+    flexShrink: 0,
   },
   ruleText: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
     color: Colors.text,
-    lineHeight: 22,
+    lineHeight: 26,
   },
   footer: {
     gap: Spacing.sm,

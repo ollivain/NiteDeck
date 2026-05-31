@@ -63,9 +63,6 @@ const GAME_OPTIONS: GameOption[] = [
 function Background() {
   return (
     <View style={StyleSheet.absoluteFill}>
-      <View style={styles.bgGlow} />
-      <View style={styles.bgGlow2} />
-      <View style={styles.bgGlow3} />
       {SPECKS.map((s, i) => (
         <View
           key={i}
@@ -133,9 +130,6 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
   return (
     <SafeAreaView style={styles.container}>
       <Background />
-      <View style={styles.splashOrbTop} />
-      <View style={styles.splashOrbBottom} />
-
       <Animated.View style={[styles.splashContent, splashStyle]}>
         <DeckMark large />
         <Text style={styles.splashTitle}>NiteDeck</Text>
@@ -259,51 +253,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#050817',
-  },
-  bgGlow: {
-    position: 'absolute',
-    width: 460,
-    height: 460,
-    borderRadius: 230,
-    backgroundColor: 'rgba(124, 92, 255, 0.16)',
-    top: -210,
-    right: -170,
-  },
-  bgGlow2: {
-    position: 'absolute',
-    width: 360,
-    height: 360,
-    borderRadius: 180,
-    backgroundColor: 'rgba(54, 116, 255, 0.1)',
-    top: 190,
-    left: -190,
-  },
-  bgGlow3: {
-    position: 'absolute',
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    backgroundColor: 'rgba(167, 139, 250, 0.09)',
-    bottom: 40,
-    right: -140,
-  },
-  splashOrbTop: {
-    position: 'absolute',
-    width: 230,
-    height: 230,
-    borderRadius: 115,
-    backgroundColor: 'rgba(129, 92, 255, 0.14)',
-    top: 70,
-    left: -92,
-  },
-  splashOrbBottom: {
-    position: 'absolute',
-    width: 310,
-    height: 310,
-    borderRadius: 155,
-    backgroundColor: 'rgba(88, 61, 204, 0.18)',
-    bottom: -96,
-    right: -84,
   },
   speck: {
     position: 'absolute',

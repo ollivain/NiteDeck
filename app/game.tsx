@@ -165,10 +165,7 @@ export default function GameScreen() {
   if (isDeckEmpty) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <View style={styles.bgGlow} />
-          <View style={styles.bgGlow2} />
-        </View>
+
         <View style={styles.emptyState}>
           <Text style={styles.emptyEmoji}>🎴</Text>
           <Text style={styles.emptyTitle}>Deck is empty!</Text>
@@ -187,11 +184,6 @@ export default function GameScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <View style={styles.bgGlow} />
-        <View style={styles.bgGlow2} />
-      </View>
-
       <View style={styles.topBar}>
         <View style={styles.playerPill}>
           <View style={[styles.dot, { backgroundColor: modeCfg.primary }]} />
@@ -295,24 +287,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#050817',
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xl,
-  },
-  bgGlow: {
-    position: 'absolute',
-    width: 390,
-    height: 390,
-    borderRadius: 195,
-    backgroundColor: 'rgba(124, 92, 255, 0.11)',
-    top: -200,
-    right: -160,
-  },
-  bgGlow2: {
-    position: 'absolute',
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    backgroundColor: 'rgba(54, 116, 255, 0.07)',
-    bottom: 60,
-    left: -150,
   },
   topBar: {
     flexDirection: 'row',

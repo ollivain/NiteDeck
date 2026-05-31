@@ -41,20 +41,13 @@ export default function GamesScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={StyleSheet.absoluteFill}>
-        <View style={styles.bgGlow} />
-        <View style={styles.bgGlow2} />
-      </View>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.header}>
-          <Text style={styles.kicker}>GAMES</Text>
           <Text style={styles.title}>Choose the night</Text>
-          <Text style={styles.subtitle}>Two ways to start. Same NiteDeck chaos.</Text>
         </View>
 
         <View style={styles.list}>
@@ -84,24 +77,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#050817',
   },
-  bgGlow: {
-    position: 'absolute',
-    width: 380,
-    height: 380,
-    borderRadius: 190,
-    backgroundColor: 'rgba(124, 92, 255, 0.14)',
-    top: -180,
-    right: -160,
-  },
-  bgGlow2: {
-    position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: 'rgba(54, 116, 255, 0.08)',
-    bottom: 40,
-    left: -170,
-  },
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: Spacing.lg,
@@ -112,17 +87,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
     gap: Spacing.sm,
   },
-  kicker: {
-    ...Typography.label,
-    color: '#A78BFA',
-  },
   title: {
     ...Typography.h1,
     color: Colors.text,
-  },
-  subtitle: {
-    ...Typography.body,
-    color: '#C7C0D8',
   },
   list: {
     gap: Spacing.md,

@@ -46,11 +46,6 @@ export default function ModeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <View style={styles.bgGlow} />
-        <View style={styles.bgGlow2} />
-      </View>
-
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -67,7 +62,6 @@ export default function ModeScreen() {
             <Text style={{ color: Colors.text }}>Choose the </Text>
             <Text style={{ color: '#A78BFA' }}>vibe</Text>
           </Text>
-          <Text style={styles.subtitle}>Choose how tonight plays out.</Text>
         </View>
 
         <View style={styles.modeList}>
@@ -98,24 +92,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#050817',
-  },
-  bgGlow: {
-    position: 'absolute',
-    width: 390,
-    height: 390,
-    borderRadius: 195,
-    backgroundColor: 'rgba(124, 92, 255, 0.14)',
-    top: -180,
-    right: -140,
-  },
-  bgGlow2: {
-    position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: 'rgba(54, 116, 255, 0.08)',
-    bottom: 80,
-    left: -160,
   },
   scroll: {
     flex: 1,
@@ -149,12 +125,6 @@ const styles = StyleSheet.create({
     ...Typography.h1,
     color: Colors.text,
     marginBottom: Spacing.sm,
-  },
-  subtitle: {
-    fontSize: 15,
-    fontWeight: '400',
-    color: '#C7C0D8',
-    lineHeight: 22,
   },
   modeList: {
     gap: Spacing.md,
