@@ -47,7 +47,6 @@ export default function SettingsScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.header}>
-          <Text style={styles.kicker}>SETTINGS</Text>
           <Text style={styles.title}>NiteDeck</Text>
           <Text style={styles.subtitle}>Simple controls and app information.</Text>
         </View>
@@ -102,10 +101,6 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: Spacing.xl,
     gap: Spacing.sm,
-  },
-  kicker: {
-    ...Typography.label,
-    color: '#A78BFA',
   },
   title: {
     ...Typography.h1,

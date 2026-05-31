@@ -31,15 +31,15 @@ export function AwardCard({ emoji, title, playerName, subtitle }: AwardCardProps
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.xl,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
     overflow: 'hidden',
   },
   accentStrip: {
     height: 2,
-    backgroundColor: Colors.accent,
+    backgroundColor: '#A78BFA',
     width: '100%',
   },
   body: {
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: Radius.full,
-    backgroundColor: Colors.accentBg,
+    backgroundColor: 'rgba(167, 139, 250, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 1.2,
-    color: Colors.accent,
+    color: '#A78BFA',
     textTransform: 'uppercase',
   },
   player: {
@@ -78,6 +78,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 11,
-    color: Colors.textMuted,
+    color: '#C7C0D8',
   },
 });

@@ -132,7 +132,7 @@ function StatTile({ icon, value, label, highlight }: StatTileProps) {
       <Ionicons
         name={icon}
         size={15}
-        color={highlight ? Colors.modes.spicy.primary : Colors.accent}
+        color={highlight ? Colors.modes.spicy.primary : '#A78BFA'}
       />
       <Text
         style={[styles.statNum, highlight && { color: Colors.modes.spicy.primary }]}
@@ -662,6 +662,10 @@ export default function RecapScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={styles.bgGlow} />
+        <View style={styles.bgGlow2} />
+      </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
@@ -782,7 +786,7 @@ export default function RecapScreen() {
                   <View style={styles.rankRight}>
                     <Text style={[
                       styles.rankCount,
-                      i === 0 && { color: Colors.accent },
+                      i === 0 && { color: '#A78BFA' },
                     ]}>
                       {stat.completed}
                     </Text>
@@ -812,7 +816,25 @@ export default function RecapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bg,
+    backgroundColor: '#050817',
+  },
+  bgGlow: {
+    position: 'absolute',
+    width: 420,
+    height: 420,
+    borderRadius: 210,
+    backgroundColor: 'rgba(124, 92, 255, 0.11)',
+    top: -200,
+    right: -160,
+  },
+  bgGlow2: {
+    position: 'absolute',
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(54, 116, 255, 0.07)',
+    bottom: 100,
+    left: -150,
   },
   scroll: {
     paddingHorizontal: Spacing.lg,
@@ -829,7 +851,9 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.14)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -851,16 +875,16 @@ const styles = StyleSheet.create({
     letterSpacing: 1.3,
   },
   heroCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.xxl,
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
     padding: Spacing.lg,
     overflow: 'hidden',
   },
   kicker: {
     ...Typography.label,
-    color: Colors.accent,
+    color: '#A78BFA',
     marginBottom: Spacing.xs,
   },
   heroRow: {
@@ -877,13 +901,13 @@ const styles = StyleSheet.create({
   heroUnit: {
     fontSize: 32,
     fontWeight: '900',
-    color: Colors.accent,
+    color: '#A78BFA',
     marginBottom: 9,
   },
   heroSub: {
     fontSize: 17,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: '#C7C0D8',
     marginTop: Spacing.sm,
   },
   durationRow: {
@@ -895,7 +919,7 @@ const styles = StyleSheet.create({
   duration: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.textDim,
+    color: '#AFA8C8',
   },
   statRow: {
     flexDirection: 'row',
@@ -904,12 +928,12 @@ const styles = StyleSheet.create({
   },
   statTile: {
     flex: 1,
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.md,
     paddingVertical: 10,
     paddingHorizontal: 6,
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
     alignItems: 'center',
     gap: 4,
   },
@@ -921,16 +945,16 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 9,
     fontWeight: '800',
-    color: Colors.textMuted,
+    color: '#AFA8C8',
     letterSpacing: 0.6,
     textAlign: 'center',
   },
   memorySection: {
     marginTop: Spacing.xl,
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.xxl,
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
     padding: Spacing.md,
   },
   section: {
@@ -955,34 +979,34 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     ...Typography.label,
-    color: Colors.textMuted,
+    color: '#A78BFA',
     marginBottom: 2,
   },
   sectionHint: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.textDim,
+    color: '#AFA8C8',
   },
   mediaCountPill: {
-    backgroundColor: Colors.accentBg,
+    backgroundColor: 'rgba(167, 139, 250, 0.12)',
     borderRadius: Radius.full,
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: Colors.accentBorder,
+    borderColor: 'rgba(167, 139, 250, 0.28)',
   },
   mediaCountText: {
     fontSize: 10,
     fontWeight: '800',
-    color: Colors.accent,
+    color: '#A78BFA',
     letterSpacing: 0.4,
   },
   shareAllBtn: {
     height: 32,
     borderRadius: Radius.full,
-    backgroundColor: Colors.accentBg,
+    backgroundColor: 'rgba(167, 139, 250, 0.12)',
     borderWidth: 1,
-    borderColor: Colors.accentBorder,
+    borderColor: 'rgba(167, 139, 250, 0.28)',
     paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -994,7 +1018,7 @@ const styles = StyleSheet.create({
   shareAllText: {
     fontSize: 10,
     fontWeight: '900',
-    color: Colors.accent,
+    color: '#A78BFA',
     letterSpacing: 0.3,
   },
   memorySingle: {
@@ -1041,9 +1065,9 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: Radius.xl,
     overflow: 'hidden',
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    borderColor: 'rgba(214, 203, 255, 0.12)',
   },
   mediaFill: {
     ...StyleSheet.absoluteFillObject,
@@ -1059,7 +1083,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: Radius.full,
-    backgroundColor: Colors.accent,
+    backgroundColor: '#A78BFA',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1072,12 +1096,12 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     backgroundColor: 'rgba(0,0,0,0.66)',
     borderWidth: 1,
-    borderColor: Colors.accentBorder,
+    borderColor: 'rgba(167, 139, 250, 0.3)',
   },
   videoTypeText: {
     fontSize: 9,
     fontWeight: '900',
-    color: Colors.accent,
+    color: '#A78BFA',
     letterSpacing: 0.7,
   },
   moreOverlay: {
@@ -1095,9 +1119,9 @@ const styles = StyleSheet.create({
     minHeight: 224,
     borderRadius: Radius.xl,
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    borderColor: 'rgba(214, 203, 255, 0.12)',
     borderStyle: 'dashed',
-    backgroundColor: Colors.bg,
+    backgroundColor: 'rgba(10, 15, 39, 0.7)',
     alignItems: 'center',
     justifyContent: 'center',
     padding: Spacing.xl,
@@ -1107,9 +1131,9 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: Radius.full,
-    backgroundColor: Colors.accentBg,
+    backgroundColor: 'rgba(167, 139, 250, 0.12)',
     borderWidth: 1,
-    borderColor: Colors.accentBorder,
+    borderColor: 'rgba(167, 139, 250, 0.25)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.xs,
@@ -1122,7 +1146,7 @@ const styles = StyleSheet.create({
   memoryEmptyText: {
     fontSize: 13,
     lineHeight: 19,
-    color: Colors.textMuted,
+    color: '#C7C0D8',
     textAlign: 'center',
   },
   highlightCard: {
@@ -1130,10 +1154,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.xl,
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
     padding: Spacing.md,
   },
   highlightIcon: {
@@ -1141,8 +1165,8 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: Colors.accentBorder,
-    backgroundColor: Colors.accentBg,
+    borderColor: 'rgba(167, 139, 250, 0.25)',
+    backgroundColor: 'rgba(167, 139, 250, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1153,7 +1177,7 @@ const styles = StyleSheet.create({
   highlightTitle: {
     fontSize: 10,
     fontWeight: '900',
-    color: Colors.accent,
+    color: '#A78BFA',
     letterSpacing: 1.2,
   },
   highlightValue: {
@@ -1164,17 +1188,17 @@ const styles = StyleSheet.create({
   highlightDetail: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: '#C7C0D8',
   },
   awardRow: {
     flexDirection: 'row',
     gap: Spacing.sm,
   },
   rankCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.xl,
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
     overflow: 'hidden',
   },
   rankRow: {
@@ -1183,7 +1207,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
+    borderBottomColor: 'rgba(214, 203, 255, 0.08)',
   },
   rankRowLast: {
     borderBottomWidth: 0,
@@ -1209,7 +1233,7 @@ const styles = StyleSheet.create({
   },
   rankUnit: {
     fontSize: 13,
-    color: Colors.textMuted,
+    color: '#C7C0D8',
   },
   viewerBackdrop: {
     flex: 1,
@@ -1244,14 +1268,14 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: 'rgba(214, 203, 255, 0.2)',
   },
   viewerCounterText: {
     fontSize: 12,
     fontWeight: '800',
-    color: Colors.textMuted,
+    color: '#C7C0D8',
     letterSpacing: 0.4,
   },
   viewerShareBtn: {
@@ -1298,14 +1322,14 @@ const styles = StyleSheet.create({
     width: 58,
     height: 58,
     borderRadius: Radius.full,
-    backgroundColor: Colors.accent,
+    backgroundColor: '#A78BFA',
     alignItems: 'center',
     justifyContent: 'center',
   },
   inactiveVideoText: {
     fontSize: 11,
     fontWeight: '900',
-    color: Colors.accent,
+    color: '#A78BFA',
     letterSpacing: 1.2,
   },
   footer: {

@@ -92,7 +92,7 @@ function DeckMark({ large = false }: { large?: boolean }) {
   return (
     <View style={[styles.deckMark, large && styles.deckMarkLarge]}>
       <View style={[styles.miniCard, large && styles.miniCardLarge, styles.miniCardBack]}>
-        <Text style={[styles.cardLetter, large && styles.cardLetterLarge]}>N</Text>
+        <Text style={[styles.cardLetter, large && styles.cardLetterLarge]}>D</Text>
       </View>
       <View style={[styles.miniCard, large && styles.miniCardLarge, styles.miniCardFront]}>
         <Text style={[styles.cardLetter, large && styles.cardLetterLarge]}>N</Text>
@@ -241,15 +241,7 @@ export default function HomeScreen() {
                 style={styles.gameCard}
               >
                 <View style={styles.gameCardGlow} />
-                <View style={styles.gameIcon}>
-                  <Ionicons name={option.icon} size={28} color="#EEE9FF" />
-                </View>
                 <Text style={styles.gameTitle}>{option.title}</Text>
-                <View style={styles.smallDividerRow}>
-                  <View style={styles.smallDivider} />
-                  <Ionicons name="sparkles" size={11} color="#A78BFA" />
-                  <View style={styles.smallDivider} />
-                </View>
                 <Text style={styles.gameDescription}>{option.description}</Text>
                 <View style={styles.gameArrow}>
                   <Ionicons name="chevron-forward" size={18} color="#B9A7FF" />
@@ -434,7 +426,6 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   gameCard: {
-    minHeight: 178,
     borderRadius: Radius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(214, 203, 255, 0.22)',
@@ -444,42 +435,20 @@ const styles = StyleSheet.create({
   },
   gameCardGlow: {
     position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(124, 92, 255, 0.18)',
-    top: -94,
-    right: -48,
-  },
-  gameIcon: {
-    width: 58,
-    height: 58,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.2)',
-    backgroundColor: 'rgba(124, 92, 255, 0.18)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.lg,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: 'rgba(124, 92, 255, 0.16)',
+    top: -80,
+    right: -40,
   },
   gameTitle: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '700',
     color: Colors.text,
-    lineHeight: 34,
+    lineHeight: 32,
     fontFamily: 'serif',
-  },
-  smallDividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 7,
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.sm,
-  },
-  smallDivider: {
-    width: 34,
-    height: 1,
-    backgroundColor: 'rgba(167, 139, 250, 0.5)',
+    marginBottom: 6,
   },
   gameDescription: {
     maxWidth: '82%',

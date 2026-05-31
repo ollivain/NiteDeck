@@ -100,7 +100,6 @@ export default function PlayersScreen() {
           <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
             <Ionicons name="arrow-back" size={20} color="#C7C0D8" />
           </TouchableOpacity>
-          <Text style={styles.stepLabel}>STEP 2 OF 4</Text>
         </View>
 
         <View style={styles.titleBlock}>
@@ -232,12 +231,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(214, 203, 255, 0.14)',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  stepLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    letterSpacing: 1.4,
-    color: '#A78BFA',
   },
   titleBlock: {
     marginBottom: Spacing.xl,

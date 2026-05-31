@@ -121,7 +121,6 @@ export default function MemoriesScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.header}>
-          <Text style={styles.kicker}>MEMORIES</Text>
           <Text style={styles.title}>Memories</Text>
           <Text style={styles.subtitle}>Recaps from finished games, saved automatically.</Text>
         </View>
@@ -210,10 +209,6 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: Spacing.xl,
     gap: Spacing.sm,
-  },
-  kicker: {
-    ...Typography.label,
-    color: '#A78BFA',
   },
   title: {
     ...Typography.h1,

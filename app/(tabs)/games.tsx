@@ -66,9 +66,6 @@ export default function GamesScreen() {
               pressedScale={0.985}
               style={styles.gameRow}
             >
-              <View style={styles.iconBox}>
-                <Ionicons name={option.icon} size={24} color="#EEE9FF" />
-              </View>
               <View style={styles.copy}>
                 <Text style={styles.gameTitle}>{option.title}</Text>
                 <Text style={styles.description}>{option.description}</Text>
@@ -141,16 +138,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.md,
     overflow: 'hidden',
-  },
-  iconBox: {
-    width: 54,
-    height: 54,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.2)',
-    backgroundColor: 'rgba(124, 92, 255, 0.18)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   copy: {
     flex: 1,
