@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen } from '@/components/ui/Screen';
 import { Button } from '@/components/ui/Button';
 import { ModeCard } from '@/components/mode/ModeCard';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
@@ -45,46 +45,87 @@ export default function ModeScreen() {
   }
 
   return (
-    <Screen scroll>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={20} color={Colors.textMuted} />
-        </TouchableOpacity>
-        <Text style={styles.stepLabel}>STEP 3 OF 4</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={styles.bgGlow} />
+        <View style={styles.bgGlow2} />
       </View>
 
-      <View style={styles.titleBlock}>
-        <Text style={styles.title}>
-          <Text style={{ color: Colors.text }}>Choose the </Text>
-          <Text style={{ color: Colors.accent }}>vibe</Text>
-        </Text>
-        <Text style={styles.subtitle}>Choose how tonight plays out.</Text>
-      </View>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={20} color="#C7C0D8" />
+          </TouchableOpacity>
+          <Text style={styles.stepLabel}>STEP 3 OF 4</Text>
+        </View>
 
-      <View style={styles.modeList}>
-        {MODES.map(mode => (
-          <ModeCard
-            key={mode}
-            mode={mode}
-            selected={selected === mode}
-            onPress={() => handleSelect(mode)}
+        <View style={styles.titleBlock}>
+          <Text style={styles.title}>
+            <Text style={{ color: Colors.text }}>Choose the </Text>
+            <Text style={{ color: '#A78BFA' }}>vibe</Text>
+          </Text>
+          <Text style={styles.subtitle}>Choose how tonight plays out.</Text>
+        </View>
+
+        <View style={styles.modeList}>
+          {MODES.map(mode => (
+            <ModeCard
+              key={mode}
+              mode={mode}
+              selected={selected === mode}
+              onPress={() => handleSelect(mode)}
+            />
+          ))}
+        </View>
+
+        <View style={styles.footer}>
+          <Button
+            label="Continue →"
+            onPress={handleStart}
+            fullWidth
+            disabled={!selected}
           />
-        ))}
-      </View>
-
-      <View style={styles.footer}>
-        <Button
-          label="Continue →"
-          onPress={handleStart}
-          fullWidth
-          disabled={!selected}
-        />
-      </View>
-    </Screen>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#050817',
+  },
+  bgGlow: {
+    position: 'absolute',
+    width: 390,
+    height: 390,
+    borderRadius: 195,
+    backgroundColor: 'rgba(124, 92, 255, 0.14)',
+    top: -180,
+    right: -140,
+  },
+  bgGlow2: {
+    position: 'absolute',
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(54, 116, 255, 0.08)',
+    bottom: 80,
+    left: -160,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.xl,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -96,13 +137,17 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.14)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   stepLabel: {
-    ...Typography.label,
-    color: Colors.textDim,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.4,
+    color: '#A78BFA',
   },
   titleBlock: {
     marginBottom: Spacing.xl,
@@ -113,8 +158,10 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   subtitle: {
-    ...Typography.body,
-    color: Colors.textMuted,
+    fontSize: 15,
+    fontWeight: '400',
+    color: '#C7C0D8',
+    lineHeight: 22,
   },
   modeList: {
     gap: Spacing.md,

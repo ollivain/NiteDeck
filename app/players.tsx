@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen } from '@/components/ui/Screen';
 import { Button } from '@/components/ui/Button';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
@@ -84,98 +84,138 @@ export default function PlayersScreen() {
   }
 
   return (
-    <Screen scroll>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={20} color={Colors.textMuted} />
-        </TouchableOpacity>
-        <Text style={styles.stepLabel}>STEP 2 OF 4</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={styles.bgGlow} />
+        <View style={styles.bgGlow2} />
       </View>
 
-      <View style={styles.titleBlock}>
-        <Text style={styles.title}>
-          <Text style={{ color: Colors.text }}>Who is{'\n'}</Text>
-          <Text style={{ color: Colors.accent }}>playing?</Text>
-        </Text>
-        <Text style={styles.subtitle}>Add at least 2 players to start</Text>
-      </View>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={20} color="#C7C0D8" />
+          </TouchableOpacity>
+          <Text style={styles.stepLabel}>STEP 2 OF 4</Text>
+        </View>
 
-      {/* Input row */}
-      <View style={styles.inputRow}>
-        <TextInput
-          style={[styles.input, inputFocused && styles.inputFocused]}
-          placeholder="Enter a name..."
-          placeholderTextColor={Colors.textDim}
-          value={inputValue}
-          onChangeText={setInputValue}
-          onSubmitEditing={handleAdd}
-          onFocus={() => setInputFocused(true)}
-          onBlur={() => setInputFocused(false)}
-          returnKeyType="done"
-          maxLength={20}
-          autoCapitalize="words"
-          selectionColor={Colors.accent}
-          autoFocus
-        />
-        <PressableScale
-          style={[styles.addBtn, !canAddPlayer && styles.addBtnDisabled]}
-          onPress={handleAdd}
-          disabled={!canAddPlayer}
-          activeOpacity={0.8}
-          pressedScale={0.94}
-        >
-          <Ionicons name="add" size={24} color={canAddPlayer ? '#0A0908' : Colors.textDim} />
-        </PressableScale>
-      </View>
-
-      {/* Player list or ghost empty state */}
-      {players.length > 0 ? (
-        <View style={styles.playerList}>
-          <Text style={styles.sectionLabel}>
-            {players.length} PLAYER{players.length !== 1 ? 'S' : ''}
+        <View style={styles.titleBlock}>
+          <Text style={styles.title}>
+            <Text style={{ color: Colors.text }}>Who is{'\n'}</Text>
+            <Text style={{ color: '#A78BFA' }}>playing?</Text>
           </Text>
-          {players.map((p, i) => (
-            <View key={p.id} style={[styles.playerRow, i === players.length - 1 && styles.playerRowLast]}>
-              <View style={styles.playerIdxCircle}>
-                <Text style={styles.playerIdx}>{i + 1}</Text>
-              </View>
-              <Text style={styles.playerRowName} numberOfLines={1}>{p.name}</Text>
-              <TouchableOpacity
-                onPress={() => removePlayer(p.id)}
-                style={styles.rowRemoveBtn}
-                hitSlop={{ top: 12, bottom: 12, left: 16, right: 16 }}
-              >
-                <Ionicons name="close" size={15} color={Colors.textDim} />
-              </TouchableOpacity>
-            </View>
-          ))}
+          <Text style={styles.subtitle}>Add at least 2 players to start</Text>
         </View>
-      ) : (
-        <View style={styles.ghostList}>
-          <Text style={styles.ghostHeading}>PLAYERS</Text>
-          {GHOST_WIDTHS.map((w, i) => (
-            <View key={i} style={[styles.ghostRow, { opacity: 0.52 - i * 0.14 }]}>
-              <View style={styles.ghostIdx} />
-              <View style={[styles.ghostBar, { width: `${w}%` }]} />
-            </View>
-          ))}
-          <Text style={styles.ghostHint}>Add players above to get started</Text>
-        </View>
-      )}
 
-      <View style={styles.footer}>
-        <Button
-          label={!canContinue ? `Need ${2 - players.length} more player${players.length === 1 ? '' : 's'}` : 'Continue →'}
-          onPress={handleContinue}
-          fullWidth
-          disabled={!canContinue || isContinuing}
-        />
-      </View>
-    </Screen>
+        <View style={styles.inputRow}>
+          <TextInput
+            style={[styles.input, inputFocused && styles.inputFocused]}
+            placeholder="Enter a name..."
+            placeholderTextColor="rgba(167, 139, 250, 0.38)"
+            value={inputValue}
+            onChangeText={setInputValue}
+            onSubmitEditing={handleAdd}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+            returnKeyType="done"
+            maxLength={20}
+            autoCapitalize="words"
+            selectionColor="#A78BFA"
+            autoFocus
+          />
+          <PressableScale
+            style={[styles.addBtn, !canAddPlayer && styles.addBtnDisabled]}
+            onPress={handleAdd}
+            disabled={!canAddPlayer}
+            activeOpacity={0.8}
+            pressedScale={0.94}
+          >
+            <Ionicons name="add" size={24} color={canAddPlayer ? '#0A0908' : 'rgba(167, 139, 250, 0.38)'} />
+          </PressableScale>
+        </View>
+
+        {players.length > 0 ? (
+          <View style={styles.playerCard}>
+            <Text style={styles.sectionLabel}>
+              {players.length} PLAYER{players.length !== 1 ? 'S' : ''}
+            </Text>
+            {players.map((p, i) => (
+              <View key={p.id} style={[styles.playerRow, i === players.length - 1 && styles.playerRowLast]}>
+                <View style={styles.playerIdxCircle}>
+                  <Text style={styles.playerIdx}>{i + 1}</Text>
+                </View>
+                <Text style={styles.playerRowName} numberOfLines={1}>{p.name}</Text>
+                <TouchableOpacity
+                  onPress={() => removePlayer(p.id)}
+                  style={styles.rowRemoveBtn}
+                  hitSlop={{ top: 12, bottom: 12, left: 16, right: 16 }}
+                >
+                  <Ionicons name="close" size={15} color="rgba(167, 139, 250, 0.5)" />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        ) : (
+          <View style={styles.ghostCard}>
+            <Text style={styles.ghostHeading}>PLAYERS</Text>
+            {GHOST_WIDTHS.map((w, i) => (
+              <View key={i} style={[styles.ghostRow, { opacity: 0.52 - i * 0.14 }]}>
+                <View style={styles.ghostIdx} />
+                <View style={[styles.ghostBar, { width: `${w}%` }]} />
+              </View>
+            ))}
+            <Text style={styles.ghostHint}>Add players above to get started</Text>
+          </View>
+        )}
+
+        <View style={styles.footer}>
+          <Button
+            label={!canContinue ? `Need ${2 - players.length} more player${players.length === 1 ? '' : 's'}` : 'Continue →'}
+            onPress={handleContinue}
+            fullWidth
+            disabled={!canContinue || isContinuing}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#050817',
+  },
+  bgGlow: {
+    position: 'absolute',
+    width: 390,
+    height: 390,
+    borderRadius: 195,
+    backgroundColor: 'rgba(124, 92, 255, 0.14)',
+    top: -180,
+    right: -140,
+  },
+  bgGlow2: {
+    position: 'absolute',
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(54, 116, 255, 0.08)',
+    bottom: 80,
+    left: -160,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.xl,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -187,13 +227,17 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.14)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   stepLabel: {
-    ...Typography.label,
-    color: Colors.textDim,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.4,
+    color: '#A78BFA',
   },
   titleBlock: {
     marginBottom: Spacing.xl,
@@ -206,11 +250,9 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 15,
     fontWeight: '400',
-    color: Colors.textMuted,
+    color: '#C7C0D8',
     lineHeight: 22,
   },
-
-  // Input
   inputRow: {
     flexDirection: 'row',
     gap: Spacing.sm,
@@ -219,16 +261,17 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 56,
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.lg,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
     paddingHorizontal: Spacing.md,
     color: Colors.text,
     fontSize: 16,
   },
   inputFocused: {
-    borderColor: Colors.accent,
+    borderColor: 'rgba(167, 139, 250, 0.55)',
+    borderWidth: 1.5,
   },
   addBtn: {
     width: 56,
@@ -239,18 +282,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addBtnDisabled: {
-    backgroundColor: Colors.surface2,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.12)',
   },
-
-  // Player list
-  playerList: {
+  playerCard: {
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
+    borderRadius: Radius.xxl,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
+    padding: Spacing.md,
     marginBottom: Spacing.xl,
   },
   sectionLabel: {
-    ...Typography.label,
-    color: Colors.textMuted,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.4,
+    color: '#A78BFA',
     marginBottom: Spacing.sm,
   },
   playerRow: {
@@ -259,7 +307,7 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
+    borderBottomColor: 'rgba(214, 203, 255, 0.08)',
   },
   playerRowLast: {
     borderBottomWidth: 0,
@@ -269,14 +317,14 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: Colors.accent,
+    borderColor: '#A78BFA',
     alignItems: 'center',
     justifyContent: 'center',
   },
   playerIdx: {
     fontSize: 13,
     fontWeight: '700',
-    color: Colors.accent,
+    color: '#A78BFA',
   },
   playerRowName: {
     flex: 1,
@@ -289,18 +337,26 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  // Ghost empty state
-  ghostList: {
+  ghostCard: {
+    backgroundColor: 'rgba(10, 15, 39, 0.7)',
+    borderRadius: Radius.xxl,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.1)',
+    borderStyle: 'dashed',
+    padding: Spacing.md,
     marginBottom: Spacing.xl,
   },
   ghostHeading: {
-    ...Typography.label,
-    color: Colors.textDim,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.4,
+    color: 'rgba(167, 139, 250, 0.35)',
     marginBottom: Spacing.sm,
   },
   ghostRow: {
@@ -309,29 +365,27 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
+    borderBottomColor: 'rgba(214, 203, 255, 0.06)',
   },
   ghostIdx: {
     width: 32,
     height: 32,
     borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: Colors.surface2,
+    borderColor: 'rgba(167, 139, 250, 0.15)',
   },
   ghostBar: {
     height: 12,
     borderRadius: 4,
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(167, 139, 250, 0.08)',
   },
   ghostHint: {
     fontSize: 13,
-    color: Colors.textDim,
+    color: 'rgba(167, 139, 250, 0.45)',
     textAlign: 'center',
     marginTop: Spacing.lg,
     letterSpacing: 0.1,
   },
-
-  // Footer
   footer: {
     paddingTop: Spacing.lg,
     paddingBottom: Spacing.md,

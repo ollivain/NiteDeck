@@ -34,28 +34,25 @@ export function ModeCard({ mode, selected, onPress }: ModeCardProps) {
               borderWidth: 1.5,
             }
           : {
-              backgroundColor: Colors.surface,
-              borderColor: Colors.border,
+              backgroundColor: 'rgba(10, 15, 39, 0.9)',
+              borderColor: 'rgba(214, 203, 255, 0.18)',
               borderWidth: 1,
             },
       ]}
     >
-      {/* Left accent bar when selected */}
       {selected && (
         <View style={[styles.accentBar, { backgroundColor: cfg.primary }]} />
       )}
 
-      {/* Emoji container */}
       <View style={[
         styles.emojiBox,
         selected
           ? { backgroundColor: cfg.bg }
-          : { backgroundColor: Colors.surface2 },
+          : { backgroundColor: 'rgba(124, 92, 255, 0.1)' },
       ]}>
         <Text style={styles.emoji}>{cfg.emoji}</Text>
       </View>
 
-      {/* Text */}
       <View style={styles.text}>
         <Text style={[styles.name, { color: selected ? cfg.primary : Colors.text }]}>
           {cfg.name}
@@ -68,7 +65,6 @@ export function ModeCard({ mode, selected, onPress }: ModeCardProps) {
         </Text>
       </View>
 
-      {/* Right side: dots or checkmark */}
       <View style={styles.right}>
         {selected ? (
           <View style={[styles.check, { backgroundColor: cfg.primary }]}>
@@ -81,7 +77,7 @@ export function ModeCard({ mode, selected, onPress }: ModeCardProps) {
                 key={i}
                 style={[
                   styles.dot,
-                  { backgroundColor: i < level ? cfg.primary : Colors.surface2 },
+                  { backgroundColor: i < level ? cfg.primary : 'rgba(214, 203, 255, 0.15)' },
                 ]}
               />
             ))}
@@ -130,14 +126,14 @@ const styles = StyleSheet.create({
   },
   desc: {
     fontSize: 13,
-    color: Colors.textDim,
+    color: '#C7C0D8',
     lineHeight: 18,
   },
   intensityLabel: {
     fontSize: 11,
     fontWeight: '600',
     letterSpacing: 0.5,
-    color: Colors.textDim,
+    color: '#AFA8C8',
     marginTop: 2,
   },
   right: {

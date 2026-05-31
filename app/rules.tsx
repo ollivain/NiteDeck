@@ -1,8 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen } from '@/components/ui/Screen';
 import { Button } from '@/components/ui/Button';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 import { useSessionStore } from '@/store/session';
@@ -63,58 +63,99 @@ export default function RulesScreen() {
   }
 
   return (
-    <Screen scroll contentStyle={styles.content}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={20} color={Colors.textMuted} />
-        </TouchableOpacity>
-        <Text style={styles.stepLabel}>STEP 4 OF 4</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={styles.bgGlow} />
+        <View style={styles.bgGlow2} />
       </View>
 
-      <View style={styles.titleBlock}>
-        <Text style={styles.kicker}>HOUSE RULES</Text>
-        <Text style={styles.title}>Before the night starts</Text>
-      </View>
-
-      <View style={[styles.rulesPanel, modeCfg && { borderColor: modeCfg.borderSelected }]}>
-        {modeCfg ? (
-          <View style={[styles.modePill, { backgroundColor: modeCfg.bg, borderColor: modeCfg.borderSelected }]}>
-            <Text style={[styles.modePillText, { color: modeCfg.primary }]}>{modeCfg.name.toUpperCase()}</Text>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
+              <Ionicons name="arrow-back" size={20} color="#C7C0D8" />
+            </TouchableOpacity>
+            <Text style={styles.stepLabel}>STEP 4 OF 4</Text>
           </View>
-        ) : null}
 
-        <View style={styles.ruleList}>
-          {RULES.map((rule, index) => (
-            <View key={rule} style={[styles.ruleRow, index === RULES.length - 1 && styles.ruleRowLast]}>
-              <View
-                style={[
-                  styles.ruleIcon,
-                  modeCfg && { backgroundColor: modeCfg.bg, borderColor: modeCfg.borderSelected },
-                ]}
-              >
-                <Ionicons name={RULE_ICONS[index]} size={18} color={modeCfg?.primary ?? Colors.accent} />
+          <View style={styles.titleBlock}>
+            <Text style={styles.kicker}>HOUSE RULES</Text>
+            <Text style={styles.title}>Before the night starts</Text>
+          </View>
+
+          <View style={[styles.rulesPanel, modeCfg && { borderColor: modeCfg.borderSelected }]}>
+            {modeCfg ? (
+              <View style={[styles.modePill, { backgroundColor: modeCfg.bg, borderColor: modeCfg.borderSelected }]}>
+                <Text style={[styles.modePillText, { color: modeCfg.primary }]}>{modeCfg.name.toUpperCase()}</Text>
               </View>
-              <Text style={styles.ruleText}>{rule}</Text>
-            </View>
-          ))}
-        </View>
-      </View>
+            ) : null}
 
-      <View style={styles.footer}>
-        <Button
-          label="Start the night"
-          onPress={handleStart}
-          fullWidth
-          disabled={!gameType || !hasEnoughPlayers || !mode || isStarting}
-        />
-        <Button label="Back" onPress={() => router.back()} variant="ghost" fullWidth />
-      </View>
-    </Screen>
+            <View style={styles.ruleList}>
+              {RULES.map((rule, index) => (
+                <View key={rule} style={[styles.ruleRow, index === RULES.length - 1 && styles.ruleRowLast]}>
+                  <View
+                    style={[
+                      styles.ruleIcon,
+                      modeCfg && { backgroundColor: modeCfg.bg, borderColor: modeCfg.borderSelected },
+                    ]}
+                  >
+                    <Ionicons name={RULE_ICONS[index]} size={18} color={modeCfg?.primary ?? '#A78BFA'} />
+                  </View>
+                  <Text style={styles.ruleText}>{rule}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.footer}>
+          <Button
+            label="Start the night"
+            onPress={handleStart}
+            fullWidth
+            disabled={!gameType || !hasEnoughPlayers || !mode || isStarting}
+          />
+          <Button label="Back" onPress={() => router.back()} variant="ghost" fullWidth />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
+  container: {
+    flex: 1,
+    backgroundColor: '#050817',
+  },
+  bgGlow: {
+    position: 'absolute',
+    width: 390,
+    height: 390,
+    borderRadius: 195,
+    backgroundColor: 'rgba(124, 92, 255, 0.14)',
+    top: -180,
+    right: -140,
+  },
+  bgGlow2: {
+    position: 'absolute',
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(54, 116, 255, 0.08)',
+    bottom: 80,
+    left: -160,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.md,
     justifyContent: 'space-between',
   },
   header: {
@@ -128,20 +169,26 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.14)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   stepLabel: {
-    ...Typography.label,
-    color: Colors.textDim,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.4,
+    color: '#A78BFA',
   },
   titleBlock: {
     marginBottom: Spacing.xxl,
   },
   kicker: {
-    ...Typography.label,
-    color: Colors.accent,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.4,
+    color: '#A78BFA',
     marginBottom: Spacing.sm,
   },
   title: {
@@ -149,10 +196,10 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   rulesPanel: {
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.xxl,
     borderWidth: 1.5,
-    borderColor: Colors.accentBorder,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
     padding: Spacing.md,
     marginBottom: Spacing.lg,
   },
@@ -178,7 +225,7 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
+    borderBottomColor: 'rgba(214, 203, 255, 0.08)',
   },
   ruleRowLast: {
     borderBottomWidth: 0,
@@ -187,9 +234,9 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: Radius.full,
-    backgroundColor: Colors.accentBg,
+    backgroundColor: 'rgba(167, 139, 250, 0.12)',
     borderWidth: 1,
-    borderColor: Colors.accentBorder,
+    borderColor: 'rgba(167, 139, 250, 0.25)',
     alignItems: 'center',
     justifyContent: 'center',
   },
