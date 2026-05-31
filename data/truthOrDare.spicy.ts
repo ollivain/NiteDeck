@@ -286,7 +286,7 @@ export const spicyTruthOrDareCards: TruthOrDareCard[] = [
     mode: 'spicy',
     choice: 'dare',
     label: 'DARE',
-    text: 'Set a 60-second timer. Anyone in this room can ask you anything. You answer all of it.',
+    text: 'Set a 60-second timer. The group gets one question. You have to answer it.',
     intensity: 2,
   },
   {

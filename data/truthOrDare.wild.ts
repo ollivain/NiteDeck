@@ -246,7 +246,7 @@ export const wildTruthOrDareCards: TruthOrDareCard[] = [
     mode: 'wild',
     choice: 'dare',
     label: 'DARE',
-    text: 'Film a 10-second fake apology to someone outside this room. The group picks who.',
+    text: 'Film a 10-second fake apology to someone outside this room. The group picks who. Do not send it.',
     intensity: 3,
   },
   {
