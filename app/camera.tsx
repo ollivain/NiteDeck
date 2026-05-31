@@ -177,15 +177,10 @@ export default function CameraScreen() {
     saveLockRef.current = true;
     setSaving(true);
     addMedia(preview.uri, preview.mediaType);
-    handleReturn();
+    router.replace(returnPath);
   };
 
   const handleReturn = () => {
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-
     router.replace(returnPath);
   };
 

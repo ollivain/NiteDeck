@@ -2,7 +2,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '@/components/ui/Screen';
-import { Button } from '@/components/ui/Button';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 import { useSessionStore } from '@/store/session';
@@ -13,7 +12,6 @@ type GameOption = {
   title: string;
   description: string;
   icon: keyof typeof Ionicons.glyphMap;
-  comingSoon?: boolean;
 };
 
 const GAME_OPTIONS: GameOption[] = [
@@ -26,224 +24,224 @@ const GAME_OPTIONS: GameOption[] = [
   {
     id: 'truth-or-dare',
     title: 'Truth or Dare',
-    description: 'Pick Truth or Dare each turn. Chill, Spicy or Wild.',
+    description: 'Personal truths, bold dares and party-ready chaos.',
     icon: 'help-buoy',
   },
 ];
 
 export default function GameTypeScreen() {
+  const reset = useSessionStore(s => s.reset);
   const setGameType = useSessionStore(s => s.setGameType);
 
   const handleSelect = (gameType: GameType) => {
+    reset();
     setGameType(gameType);
     router.push('/players');
   };
 
   return (
-    <Screen scroll>
+    <Screen scroll style={styles.screen} contentStyle={styles.content}>
+      <View style={StyleSheet.absoluteFill}>
+        <View style={styles.bgGlow} />
+        <View style={styles.bgGlow2} />
+      </View>
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={20} color={Colors.textMuted} />
+          <Ionicons name="arrow-back" size={20} color="#D8D2EA" />
         </TouchableOpacity>
-        <Text style={styles.stepLabel}>STEP 1 OF 4</Text>
+        <View style={styles.headerPill}>
+          <Ionicons name="sparkles" size={12} color="#A78BFA" />
+          <Text style={styles.stepLabel}>CHOOSE GAME</Text>
+        </View>
       </View>
 
       <View style={styles.titleBlock}>
-        <Text style={styles.title}>
-          <Text style={{ color: Colors.text }}>Choose your </Text>
-          <Text style={{ color: Colors.accent }}>game</Text>
-        </Text>
-        <Text style={styles.subtitle}>Pick the original group deck or a round of Truth or Dare.</Text>
+        <Text style={styles.eyebrow}>NiteDeck</Text>
+        <Text style={styles.title}>Choose your game</Text>
+        <Text style={styles.subtitle}>Pick the party mode for tonight.</Text>
       </View>
 
       <View style={styles.optionList}>
-        {GAME_OPTIONS.map(option => {
-          const disabled = Boolean(option.comingSoon);
-          const isClassic = option.id === 'classic';
+        {GAME_OPTIONS.map(option => (
+          <PressableScale
+            key={option.id}
+            onPress={() => handleSelect(option.id)}
+            activeOpacity={0.84}
+            pressedScale={0.985}
+            style={styles.optionCard}
+          >
+            <View style={styles.cardGlow} />
 
-          return (
-            <PressableScale
-              key={option.id}
-              onPress={() => handleSelect(option.id)}
-              disabled={disabled}
-              activeOpacity={0.82}
-              pressedScale={0.985}
-              style={[
-                styles.optionCard,
-                isClassic && styles.optionCardPrimary,
-                disabled && styles.optionCardDisabled,
-              ]}
-            >
-              {isClassic && <View style={styles.accentBar} />}
+            <View style={styles.iconBox}>
+              <Ionicons name={option.icon} size={26} color="#EEE9FF" />
+            </View>
 
-              <View style={[styles.iconBox, isClassic && styles.iconBoxPrimary]}>
-                <Ionicons
-                  name={option.icon}
-                  size={24}
-                  color={isClassic ? Colors.accent : Colors.textDim}
-                />
+            <View style={styles.optionText}>
+              <Text style={styles.optionTitle}>{option.title}</Text>
+              <View style={styles.smallDividerRow}>
+                <View style={styles.smallDivider} />
+                <Ionicons name="sparkles" size={11} color="#A78BFA" />
+                <View style={styles.smallDivider} />
               </View>
+              <Text style={styles.optionDescription}>{option.description}</Text>
+            </View>
 
-              <View style={styles.optionText}>
-                <View style={styles.optionTitleRow}>
-                  <Text style={[styles.optionTitle, isClassic && { color: Colors.accent }]}>
-                    {option.title}
-                  </Text>
-                  {option.comingSoon ? (
-                    <View style={styles.soonPill}>
-                      <Text style={styles.soonText}>COMING SOON</Text>
-                    </View>
-                  ) : null}
-                </View>
-                <Text style={styles.optionDescription}>{option.description}</Text>
-                {isClassic ? (
-                  <Text style={styles.optionMeta}>Original NiteDeck flow</Text>
-                ) : (
-                  <Text style={styles.optionMeta}>New MVP mode</Text>
-                )}
-              </View>
-
-              <View style={styles.rightIcon}>
-                <Ionicons
-                  name="chevron-forward"
-                  size={20}
-                  color={isClassic ? Colors.accent : Colors.textMuted}
-                />
-              </View>
-            </PressableScale>
-          );
-        })}
-      </View>
-
-      <View style={styles.footer}>
-        <Button label="Continue with Classic" onPress={() => handleSelect('classic')} fullWidth />
+            <View style={styles.rightIcon}>
+              <Ionicons name="chevron-forward" size={20} color="#B9A7FF" />
+            </View>
+          </PressableScale>
+        ))}
       </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    backgroundColor: '#050817',
+  },
+  content: {
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.xxl,
+  },
+  bgGlow: {
+    position: 'absolute',
+    width: 420,
+    height: 420,
+    borderRadius: 210,
+    backgroundColor: 'rgba(124, 92, 255, 0.14)',
+    top: -210,
+    right: -150,
+  },
+  bgGlow2: {
+    position: 'absolute',
+    width: 340,
+    height: 340,
+    borderRadius: 170,
+    backgroundColor: 'rgba(54, 116, 255, 0.08)',
+    bottom: 20,
+    left: -180,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: Spacing.md,
     marginBottom: Spacing.xl,
   },
   backBtn: {
-    width: 36,
-    height: 36,
+    width: 42,
+    height: 42,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surface2,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
+    backgroundColor: 'rgba(13, 19, 48, 0.78)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  headerPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.26)',
+    backgroundColor: 'rgba(124, 92, 255, 0.12)',
+    paddingHorizontal: 13,
+    paddingVertical: 8,
   },
   stepLabel: {
     ...Typography.label,
-    color: Colors.textDim,
+    color: '#C8BFFF',
   },
   titleBlock: {
     marginBottom: Spacing.xl,
+    gap: Spacing.sm,
+  },
+  eyebrow: {
+    ...Typography.label,
+    color: '#A78BFA',
   },
   title: {
-    ...Typography.h1,
+    fontSize: 42,
+    fontWeight: '800',
     color: Colors.text,
-    marginBottom: Spacing.sm,
+    lineHeight: 46,
+    fontFamily: 'serif',
   },
   subtitle: {
     ...Typography.body,
-    color: Colors.textMuted,
+    color: '#C7C0D8',
   },
   optionList: {
     gap: Spacing.md,
-    marginBottom: Spacing.xl,
   },
   optionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-    borderRadius: Radius.xl,
+    minHeight: 166,
+    borderRadius: Radius.xxl,
     borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.surface,
+    borderColor: 'rgba(214, 203, 255, 0.22)',
+    backgroundColor: 'rgba(10, 15, 39, 0.88)',
     padding: Spacing.lg,
     overflow: 'hidden',
   },
-  optionCardPrimary: {
-    borderWidth: 1.5,
-    borderColor: Colors.accentBorder,
-    backgroundColor: Colors.accentBg,
-  },
-  optionCardDisabled: {
-    opacity: 0.62,
-  },
-  accentBar: {
+  cardGlow: {
     position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 3,
-    backgroundColor: Colors.accent,
+    width: 170,
+    height: 170,
+    borderRadius: 85,
+    backgroundColor: 'rgba(124, 92, 255, 0.18)',
+    top: -86,
+    right: -42,
   },
   iconBox: {
-    width: 52,
-    height: 52,
+    width: 58,
+    height: 58,
     borderRadius: Radius.lg,
-    backgroundColor: Colors.surface2,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.2)',
+    backgroundColor: 'rgba(124, 92, 255, 0.18)',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  iconBoxPrimary: {
-    backgroundColor: Colors.surface,
+    marginBottom: Spacing.lg,
   },
   optionText: {
-    flex: 1,
-    gap: 4,
-  },
-  optionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+    paddingRight: Spacing.xl,
     gap: Spacing.sm,
   },
   optionTitle: {
-    fontSize: 17,
-    fontWeight: '800',
+    fontSize: 25,
+    fontWeight: '700',
     color: Colors.text,
-    letterSpacing: -0.2,
+    lineHeight: 31,
+    fontFamily: 'serif',
   },
-  soonPill: {
-    borderRadius: Radius.full,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    backgroundColor: Colors.surface2,
+  smallDividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
   },
-  soonText: {
-    fontSize: 9,
-    fontWeight: '900',
-    color: Colors.textDim,
-    letterSpacing: 0.7,
+  smallDivider: {
+    width: 34,
+    height: 1,
+    backgroundColor: 'rgba(167, 139, 250, 0.5)',
   },
   optionDescription: {
-    fontSize: 13,
-    color: Colors.textMuted,
-    lineHeight: 18,
-  },
-  optionMeta: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Colors.textDim,
-    letterSpacing: 0.5,
-    marginTop: 2,
+    fontSize: 15,
+    color: '#C7C0D8',
+    lineHeight: 22,
   },
   rightIcon: {
+    position: 'absolute',
+    right: Spacing.lg,
+    top: Spacing.lg,
+    width: 34,
+    height: 34,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  footer: {
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.md,
   },
 });
