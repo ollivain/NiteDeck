@@ -288,7 +288,8 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     const state = get();
     const { endedAt, gameType, mode, players, played, startedAt } = state;
 
-    if (!gameType || !mode || !startedAt || !endedAt || played.length === 0) {
+    const hasActivity = played.length > 0 || state.mediaMoments.length > 0 || state.mediaUris.length > 0;
+    if (!gameType || !mode || !startedAt || !endedAt || !hasActivity) {
       return null;
     }
 
