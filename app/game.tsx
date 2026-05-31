@@ -165,6 +165,10 @@ export default function GameScreen() {
   if (isDeckEmpty) {
     return (
       <SafeAreaView style={styles.container}>
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          <View style={styles.bgGlow} />
+          <View style={styles.bgGlow2} />
+        </View>
         <View style={styles.emptyState}>
           <Text style={styles.emptyEmoji}>🎴</Text>
           <Text style={styles.emptyTitle}>Deck is empty!</Text>
@@ -183,7 +187,11 @@ export default function GameScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Top bar */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={styles.bgGlow} />
+        <View style={styles.bgGlow2} />
+      </View>
+
       <View style={styles.topBar}>
         <View style={styles.playerPill}>
           <View style={[styles.dot, { backgroundColor: modeCfg.primary }]} />
@@ -194,13 +202,12 @@ export default function GameScreen() {
         </View>
         <View style={styles.topActions}>
           <PressableScale onPress={handleEndGame} style={styles.endBtn} hitSlop={8} pressedScale={0.97}>
-            <Ionicons name="stop-circle-outline" size={18} color={Colors.textMuted} />
+            <Ionicons name="stop-circle-outline" size={18} color="#C7C0D8" />
             <Text style={styles.endBtnText}>End</Text>
           </PressableScale>
         </View>
       </View>
 
-      {/* Segmented progress bar */}
       <View style={styles.progressTrack}>
         {Array.from({ length: 7 }, (_, i) => {
           const filled = Math.max(1, Math.ceil(progress * 7));
@@ -211,14 +218,13 @@ export default function GameScreen() {
                 styles.progressSegment,
                 i < filled
                   ? { backgroundColor: modeCfg.primary }
-                  : { backgroundColor: Colors.surface2 },
+                  : { backgroundColor: 'rgba(214, 203, 255, 0.1)' },
               ]}
             />
           );
         })}
       </View>
 
-      {/* Card → camera FAB row → actions, all in normal flex flow */}
       <View style={styles.content}>
         <Animated.View style={[styles.cardArea, cardAnimatedStyle]}>
           {currentCard && (
@@ -231,7 +237,6 @@ export default function GameScreen() {
           )}
         </Animated.View>
 
-        {/* Camera FAB — self-sized, right-aligned between card and actions */}
         <View style={styles.cameraRow}>
           {isCameraCard && (
             <View style={styles.cameraHint}>
@@ -257,7 +262,6 @@ export default function GameScreen() {
           </PressableScale>
         </View>
 
-        {/* Actions */}
         <View style={styles.actions}>
           <PressableScale
             style={[styles.skipBtn, isTransitioningCard && styles.actionBtnDisabled]}
@@ -266,7 +270,7 @@ export default function GameScreen() {
             disabled={isTransitioningCard}
             pressedScale={0.97}
           >
-            <Ionicons name="play-skip-forward" size={16} color={Colors.textMuted} />
+            <Ionicons name="play-skip-forward" size={16} color="#C7C0D8" />
             <Text style={styles.skipText}>Skip</Text>
           </PressableScale>
           <PressableScale
@@ -288,9 +292,27 @@ export default function GameScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bg,
+    backgroundColor: '#050817',
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xl,
+  },
+  bgGlow: {
+    position: 'absolute',
+    width: 390,
+    height: 390,
+    borderRadius: 195,
+    backgroundColor: 'rgba(124, 92, 255, 0.11)',
+    top: -200,
+    right: -160,
+  },
+  bgGlow2: {
+    position: 'absolute',
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: 'rgba(54, 116, 255, 0.07)',
+    bottom: 60,
+    left: -150,
   },
   topBar: {
     flexDirection: 'row',
@@ -302,8 +324,10 @@ const styles = StyleSheet.create({
   playerPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.14)',
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     gap: 6,
@@ -322,7 +346,7 @@ const styles = StyleSheet.create({
   },
   turnSuffix: {
     fontSize: 15,
-    color: Colors.textMuted,
+    color: '#C7C0D8',
   },
   topActions: {
     flexDirection: 'row',
@@ -336,13 +360,15 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     borderRadius: Radius.md,
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.12)',
     height: 38,
   },
   endBtnText: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: '#C7C0D8',
   },
   progressTrack: {
     flexDirection: 'row',
@@ -392,7 +418,7 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: Radius.lg,
     borderWidth: 1,
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
     shadowOffset: { width: 0, height: 0 },
@@ -428,14 +454,14 @@ const styles = StyleSheet.create({
     gap: 6,
     height: 60,
     borderRadius: Radius.xl,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.16)',
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
   },
   skipText: {
     fontSize: 15,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: '#C7C0D8',
   },
   doneBtn: {
     flex: 5,
@@ -473,7 +499,7 @@ const styles = StyleSheet.create({
   },
   emptySubtitle: {
     fontSize: 16,
-    color: Colors.textMuted,
+    color: '#C7C0D8',
     textAlign: 'center',
     lineHeight: 24,
   },

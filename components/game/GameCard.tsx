@@ -31,7 +31,6 @@ export function GameCard({ card, mode, cardNumber, totalCards }: GameCardProps) 
 
   return (
     <View style={[styles.card, { borderColor: cfg.primary }]}>
-      {/* Top row: type tag + dots */}
       <View style={styles.topRow}>
         <View style={[styles.typeTag, { borderColor: cfg.primary }]}>
           <Text style={[styles.typeLabel, { color: cfg.primary }]}>
@@ -44,21 +43,19 @@ export function GameCard({ card, mode, cardNumber, totalCards }: GameCardProps) 
               key={i}
               style={[
                 styles.typeDot,
-                { backgroundColor: i < dots ? cfg.primary : Colors.surface2 },
+                { backgroundColor: i < dots ? cfg.primary : 'rgba(214, 203, 255, 0.15)' },
               ]}
             />
           ))}
         </View>
       </View>
 
-      {/* Main card text */}
       <View style={styles.textWrap}>
         <Text style={[styles.cardText, { fontSize, lineHeight: fontSize * 1.45 }]}>
           {card.text}
         </Text>
       </View>
 
-      {/* Footer */}
       <View style={styles.footer}>
         <View style={[styles.modeChip, { borderColor: cfg.primary }]}>
           <Text style={[styles.modeName, { color: cfg.primary }]}>{cfg.emoji}  {cfg.name}</Text>
@@ -72,7 +69,7 @@ export function GameCard({ card, mode, cardNumber, totalCards }: GameCardProps) 
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.xxl,
     borderWidth: 1.5,
     paddingHorizontal: Spacing.xl,
@@ -132,7 +129,7 @@ const styles = StyleSheet.create({
   counter: {
     fontSize: 13,
     fontWeight: '500',
-    color: Colors.textDim,
+    color: '#AFA8C8',
     letterSpacing: 0.3,
   },
 });

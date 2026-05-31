@@ -41,7 +41,7 @@ function TruthOrDarePromptCard({ card, cardNumber, totalCards }: TruthOrDareProm
               key={i}
               style={[
                 styles.typeDot,
-                { backgroundColor: i < dots ? cfg.primary : Colors.surface2 },
+                { backgroundColor: i < dots ? cfg.primary : 'rgba(214, 203, 255, 0.15)' },
               ]}
             />
           ))}
@@ -178,6 +178,10 @@ export default function TruthOrDareScreen() {
   if (isDeckEmpty) {
     return (
       <SafeAreaView style={styles.container}>
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          <View style={styles.bgGlow} />
+          <View style={styles.bgGlow2} />
+        </View>
         <View style={styles.emptyState}>
           <Text style={styles.emptyEmoji}>?</Text>
           <Text style={styles.emptyTitle}>Truth or Dare complete!</Text>
@@ -194,6 +198,11 @@ export default function TruthOrDareScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={styles.bgGlow} />
+        <View style={styles.bgGlow2} />
+      </View>
+
       <View style={styles.topBar}>
         <View style={styles.playerPill}>
           {modeCfg ? <View style={[styles.dot, { backgroundColor: modeCfg.primary }]} /> : null}
@@ -203,7 +212,7 @@ export default function TruthOrDareScreen() {
           <Text style={styles.turnSuffix}>{'s turn'}</Text>
         </View>
         <PressableScale onPress={handleEndGame} style={styles.endBtn} hitSlop={8} pressedScale={0.97}>
-          <Ionicons name="stop-circle-outline" size={18} color={Colors.textMuted} />
+          <Ionicons name="stop-circle-outline" size={18} color="#C7C0D8" />
           <Text style={styles.endBtnText}>End</Text>
         </PressableScale>
       </View>
@@ -218,7 +227,7 @@ export default function TruthOrDareScreen() {
                 styles.progressSegment,
                 i < filled && modeCfg
                   ? { backgroundColor: modeCfg.primary }
-                  : { backgroundColor: Colors.surface2 },
+                  : { backgroundColor: 'rgba(214, 203, 255, 0.1)' },
               ]}
             />
           );
@@ -305,7 +314,7 @@ export default function TruthOrDareScreen() {
                 activeOpacity={0.74}
                 pressedScale={0.97}
               >
-                <Ionicons name="play-skip-forward" size={16} color={Colors.textMuted} />
+                <Ionicons name="play-skip-forward" size={16} color="#C7C0D8" />
                 <Text style={styles.skipText}>Skip</Text>
               </PressableScale>
               <PressableScale
@@ -334,9 +343,27 @@ export default function TruthOrDareScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bg,
+    backgroundColor: '#050817',
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xl,
+  },
+  bgGlow: {
+    position: 'absolute',
+    width: 390,
+    height: 390,
+    borderRadius: 195,
+    backgroundColor: 'rgba(124, 92, 255, 0.11)',
+    top: -200,
+    right: -160,
+  },
+  bgGlow2: {
+    position: 'absolute',
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: 'rgba(54, 116, 255, 0.07)',
+    bottom: 60,
+    left: -150,
   },
   topBar: {
     flexDirection: 'row',
@@ -348,8 +375,10 @@ const styles = StyleSheet.create({
   playerPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.14)',
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     gap: 6,
@@ -368,7 +397,7 @@ const styles = StyleSheet.create({
   },
   turnSuffix: {
     fontSize: 15,
-    color: Colors.textMuted,
+    color: '#C7C0D8',
   },
   endBtn: {
     flexDirection: 'row',
@@ -377,13 +406,15 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     borderRadius: Radius.md,
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.12)',
     height: 38,
   },
   endBtnText: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: '#C7C0D8',
   },
   progressTrack: {
     flexDirection: 'row',
@@ -409,7 +440,7 @@ const styles = StyleSheet.create({
   },
   kicker: {
     ...Typography.label,
-    color: Colors.accent,
+    color: '#A78BFA',
   },
   choiceTitle: {
     ...Typography.h1,
@@ -417,7 +448,7 @@ const styles = StyleSheet.create({
   },
   choiceSubtitle: {
     ...Typography.body,
-    color: Colors.textMuted,
+    color: '#C7C0D8',
   },
   choiceButtons: {
     flexDirection: 'row',
@@ -428,8 +459,8 @@ const styles = StyleSheet.create({
     minHeight: 176,
     borderRadius: Radius.xxl,
     borderWidth: 1.5,
-    borderColor: Colors.accentBorder,
-    backgroundColor: Colors.surface,
+    borderColor: 'rgba(214, 203, 255, 0.18)',
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
@@ -447,13 +478,13 @@ const styles = StyleSheet.create({
   choiceMeta: {
     fontSize: 12,
     fontWeight: '800',
-    color: Colors.textDim,
+    color: '#AFA8C8',
     letterSpacing: 0.6,
     textTransform: 'uppercase',
   },
   promptCard: {
     flex: 1,
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     borderRadius: Radius.xxl,
     borderWidth: 1.5,
     paddingHorizontal: Spacing.xl,
@@ -475,7 +506,7 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: Radius.lg,
     borderWidth: 1,
-    backgroundColor: Colors.surface2,
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
     shadowOffset: { width: 0, height: 0 },
@@ -539,7 +570,7 @@ const styles = StyleSheet.create({
   counter: {
     fontSize: 13,
     fontWeight: '500',
-    color: Colors.textDim,
+    color: '#AFA8C8',
     letterSpacing: 0.3,
   },
   actions: {
@@ -555,14 +586,14 @@ const styles = StyleSheet.create({
     gap: 6,
     height: 60,
     borderRadius: Radius.xl,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 203, 255, 0.16)',
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
   },
   skipText: {
     fontSize: 15,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: '#C7C0D8',
   },
   doneBtn: {
     flex: 5,
@@ -585,15 +616,15 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: Radius.xl,
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
-    backgroundColor: Colors.surface,
+    borderColor: 'rgba(214, 203, 255, 0.12)',
+    backgroundColor: 'rgba(10, 15, 39, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   waitingText: {
     fontSize: 13,
     fontWeight: '800',
-    color: Colors.textDim,
+    color: '#AFA8C8',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
@@ -605,7 +636,7 @@ const styles = StyleSheet.create({
   },
   emptyEmoji: {
     fontSize: 64,
-    color: Colors.accent,
+    color: '#A78BFA',
   },
   emptyTitle: {
     fontSize: 34,
@@ -616,7 +647,7 @@ const styles = StyleSheet.create({
   },
   emptySubtitle: {
     fontSize: 16,
-    color: Colors.textMuted,
+    color: '#C7C0D8',
     textAlign: 'center',
     lineHeight: 24,
   },
