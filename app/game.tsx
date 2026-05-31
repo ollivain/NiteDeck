@@ -155,7 +155,7 @@ export default function GameScreen() {
   };
 
   const handleCamera = () => {
-    router.push({ pathname: '/camera', params: { returnTo: '/game' } });
+    router.push({ pathname: '/camera', params: { preserveGameStack: '1', returnTo: '/game' } });
   };
 
   if (invalidGameState) {

@@ -534,9 +534,11 @@ export default function RecapScreen() {
   const mediaUris = useSessionStore(s => s.mediaUris);
   const mediaMoments = useSessionStore(s => s.mediaMoments);
   const reset = useSessionStore(s => s.reset);
+  const saveCurrentNight = useSessionStore(s => s.saveCurrentNight);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [selectedMediaIndex, setSelectedMediaIndex] = useState<number | null>(null);
   const [isSharingAll, setIsSharingAll] = useState(false);
+  const savedNightIdRef = useRef<string | null>(null);
   const shareAllAlertOpenRef = useRef(false);
   const sharingAllLockRef = useRef(false);
 
@@ -554,6 +556,7 @@ export default function RecapScreen() {
   const mediaItems: MediaMoment[] = mediaMoments.length > 0
     ? mediaMoments
     : mediaUris.map((uri, i) => ({ uri, mediaType: 'photo', createdAt: i }));
+  const recapSaveKey = gameType && startedAt && endedAt ? `${gameType}-${startedAt}-${endedAt}` : null;
   const highlight = buildHighlight(gameType, mode, played, mediaItems);
   const awards = computeAwards(players, played);
 
@@ -564,6 +567,15 @@ export default function RecapScreen() {
       skips: played.filter(c => c.playerId === p.id && c.skipped).length,
     }))
     .sort((a, b) => b.completed - a.completed);
+
+  useEffect(() => {
+    if (!recapSaveKey || savedNightIdRef.current === recapSaveKey) return;
+
+    const savedNight = saveCurrentNight();
+    if (savedNight) {
+      savedNightIdRef.current = savedNight.id;
+    }
+  }, [recapSaveKey, saveCurrentNight]);
 
   const returnHomeAfterReset = () => {
     router.dismissAll();

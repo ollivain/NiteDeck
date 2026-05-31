@@ -23,6 +23,20 @@ export type MediaMoment = {
   createdAt: number;
 };
 
+export type SavedNight = {
+  id: string;
+  createdAt: string;
+  gameType: GameType;
+  mode: Mode;
+  players: string[];
+  mediaMoments: MediaMoment[];
+  stats: {
+    totalTurnsOrCards: number;
+    skipped: number;
+    durationSeconds?: number;
+  };
+};
+
 type SessionStore = {
   players: Player[];
   gameType: GameType | null;
@@ -41,6 +55,7 @@ type SessionStore = {
   played: PlayedCard[];
   mediaUris: string[];
   mediaMoments: MediaMoment[];
+  savedNights: SavedNight[];
 
   addPlayer: (name: string) => void;
   removePlayer: (id: string) => void;
@@ -54,6 +69,8 @@ type SessionStore = {
   skipCard: () => void;
   endGame: () => void;
   addMedia: (uri: string, mediaType?: MediaType) => void;
+  saveCurrentNight: () => SavedNight | null;
+  clearSavedNights: () => void;
   reset: () => void;
 };
 
@@ -159,6 +176,7 @@ const defaultState = {
 
 export const useSessionStore = create<SessionStore>((set, get) => ({
   ...defaultState,
+  savedNights: [],
 
   addPlayer: (name: string) => {
     const trimmed = name.trim();
@@ -266,5 +284,48 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       mediaMoments: [...s.mediaMoments, { uri, mediaType, createdAt: Date.now() }],
     })),
 
-  reset: () => set({ ...defaultState }),
+  saveCurrentNight: () => {
+    const state = get();
+    const { endedAt, gameType, mode, players, played, startedAt } = state;
+
+    if (!gameType || !mode || !startedAt || !endedAt || played.length === 0) {
+      return null;
+    }
+
+    const id = `${gameType}-${startedAt}-${endedAt}`;
+    const existingNight = state.savedNights.find(night => night.id === id);
+    if (existingNight) {
+      return existingNight;
+    }
+
+    const mediaMoments = state.mediaMoments.length > 0
+      ? state.mediaMoments
+      : state.mediaUris.map((uri, index) => ({
+        uri,
+        mediaType: 'photo' as const,
+        createdAt: index,
+      }));
+
+    const night: SavedNight = {
+      id,
+      createdAt: new Date(endedAt).toISOString(),
+      gameType,
+      mode,
+      players: players.map(player => player.name),
+      // Saved night media currently uses local session URIs; durable file persistence can be added later.
+      mediaMoments: mediaMoments.map(moment => ({ ...moment })),
+      stats: {
+        totalTurnsOrCards: played.length,
+        skipped: played.filter(card => card.skipped).length,
+        durationSeconds: Math.max(0, Math.round((endedAt - startedAt) / 1000)),
+      },
+    };
+
+    set(s => ({ savedNights: [night, ...s.savedNights] }));
+    return night;
+  },
+
+  clearSavedNights: () => set({ savedNights: [] }),
+
+  reset: () => set(s => ({ ...defaultState, savedNights: s.savedNights })),
 }));

@@ -39,6 +39,11 @@ function resolveCameraReturnTo(returnTo: string | string[] | undefined): CameraR
   return candidate === '/truth-or-dare' ? '/truth-or-dare' : '/game';
 }
 
+function resolvePreserveGameStack(preserveGameStack: string | string[] | undefined): boolean {
+  const candidate = Array.isArray(preserveGameStack) ? preserveGameStack[0] : preserveGameStack;
+  return candidate === '1';
+}
+
 function VideoPreview({ uri }: { uri: string }) {
   const player = useVideoPlayer(uri, player => {
     player.loop = true;
@@ -58,7 +63,10 @@ function VideoPreview({ uri }: { uri: string }) {
 
 export default function CameraScreen() {
   const insets = useSafeAreaInsets();
-  const { returnTo } = useLocalSearchParams<{ returnTo?: string | string[] }>();
+  const { preserveGameStack, returnTo } = useLocalSearchParams<{
+    preserveGameStack?: string | string[];
+    returnTo?: string | string[];
+  }>();
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState<CameraType>('back');
   const [flash, setFlash] = useState<FlashMode>('off');
@@ -77,6 +85,7 @@ export default function CameraScreen() {
   const focusRingAnim = useRef(new Animated.Value(0)).current;
   const addMedia = useSessionStore(s => s.addMedia);
   const returnPath = resolveCameraReturnTo(returnTo);
+  const shouldPreserveGameStack = resolvePreserveGameStack(preserveGameStack);
 
   // Refs for pinch — PanResponder closure can't see changing state
   const zoomRef = useRef(0);
@@ -172,16 +181,21 @@ export default function CameraScreen() {
     }
   };
 
+  const handleReturn = () => {
+    if (shouldPreserveGameStack && router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace(returnPath);
+  };
+
   const handleSave = () => {
     if (saveLockRef.current || saving || !preview) return;
     saveLockRef.current = true;
     setSaving(true);
     addMedia(preview.uri, preview.mediaType);
-    router.replace(returnPath);
-  };
-
-  const handleReturn = () => {
-    router.replace(returnPath);
+    handleReturn();
   };
 
   const toggleFacing = () => setFacing(f => (f === 'back' ? 'front' : 'back'));

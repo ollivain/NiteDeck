@@ -165,7 +165,10 @@ export default function TruthOrDareScreen() {
   };
 
   const handleCamera = () => {
-    router.push({ pathname: '/camera', params: { returnTo: '/truth-or-dare' } });
+    router.push({
+      pathname: '/camera',
+      params: { preserveGameStack: '1', returnTo: '/truth-or-dare' },
+    });
   };
 
   if (invalidGameState) {
