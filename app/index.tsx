@@ -86,14 +86,13 @@ export default function HomeScreen() {
 
           <View style={styles.divider} />
 
-          <Text style={styles.tagline}>One phone.</Text>
-          <Text style={styles.tagline}>One night.</Text>
-          <Text style={styles.tagline}>Unlimited chaos.</Text>
+          <Text style={styles.tagline}>Party games. Drinking games.</Text>
+          <Text style={styles.tagline}>Memories you’ll talk about.</Text>
         </View>
 
         {/* Footer CTA */}
         <View style={styles.footer}>
-          <Button label="Let's Play →" onPress={handleStart} fullWidth />
+          <Button label="Let’s Play" onPress={handleStart} fullWidth />
           <Text style={styles.hint}>2+ players · any time · free</Text>
         </View>
       </View>
