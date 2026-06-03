@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
@@ -10,9 +10,17 @@ import { usePremiumStore } from '@/store/premium';
 import type { PackId, PremiumCard } from '@/data/types';
 
 const FALLBACK_PREVIEW_COUNT = 5;
+const PACK_WHY_LINES: Record<PackId, string> = {
+  temptations: 'For late-night flirting and tension.',
+  roast: 'For groups that can take a joke.',
+  'truth-bombs': 'For honest answers and exposed opinions.',
+  'couples-chemistry': 'For dates, couples and warmer conversations.',
+  'after-dark': 'For the messiest final hour of the night.',
+};
 
 export default function ShopScreen() {
   const insets = useSafeAreaInsets();
+  const { height: screenHeight } = useWindowDimensions();
   const [selectedPackId, setSelectedPackId] = useState<PackId | null>(null);
 
   // Premium entitlement state
@@ -73,6 +81,30 @@ export default function ShopScreen() {
           </View>
         </View>
 
+        <View style={styles.premiumCtaCard}>
+          <View style={styles.premiumCtaHeader}>
+            <View style={styles.premiumCtaIcon}>
+              <Ionicons name="diamond" size={20} color={Colors.accent} />
+            </View>
+            <View style={styles.premiumCtaCopy}>
+              <Text style={styles.premiumCtaTitle}>Get all packs</Text>
+              <Text style={styles.premiumCtaText}>
+                Planned premium unlock for every pack. Purchase logic is not active yet.
+              </Text>
+            </View>
+          </View>
+          <View style={styles.priceGrid}>
+            <View style={styles.pricePill}>
+              <Text style={styles.priceLabel}>Single pack</Text>
+              <Text style={styles.priceValue}>Planned €1.99</Text>
+            </View>
+            <View style={styles.pricePill}>
+              <Text style={styles.priceLabel}>All packs</Text>
+              <Text style={styles.priceValue}>Planned €9.99-€14.99</Text>
+            </View>
+          </View>
+        </View>
+
         <View style={styles.packGrid}>
           {premiumPacks.map(pack => {
             const unlocked = isUnlocked(pack.id);
@@ -115,6 +147,7 @@ export default function ShopScreen() {
 
                 <Text style={styles.packTitle}>{pack.title}</Text>
                 <Text style={styles.cardCount}>{pack.cardCount} cards</Text>
+                <Text style={styles.packWhy}>{PACK_WHY_LINES[pack.id]}</Text>
                 <Text style={styles.packDescription}>{pack.description}</Text>
 
                 {pack.previewLines.length > 0 && (
@@ -146,6 +179,7 @@ export default function ShopScreen() {
           <View
             style={[
               styles.sheet,
+              { maxHeight: Math.round(screenHeight * 0.84) },
               { paddingBottom: Math.max(insets.bottom, Spacing.lg) },
             ]}
           >
@@ -203,6 +237,7 @@ export default function ShopScreen() {
 
                   {/* Card count */}
                   <Text style={styles.cardCount}>{selectedPack.cardCount} cards</Text>
+                  <Text style={styles.packWhy}>{PACK_WHY_LINES[selectedPack.id]}</Text>
 
                   {/* Description */}
                   <Text style={styles.modalDescription}>{selectedPack.description}</Text>
@@ -242,7 +277,7 @@ export default function ShopScreen() {
                       style={styles.devToggle}
                     >
                       <Text style={styles.devToggleText}>
-                        {'DEV · '}
+                        {'DEV - '}
                         {isSelectedPackUnlocked ? 'Lock pack' : 'Unlock pack'}
                       </Text>
                     </Pressable>
@@ -313,6 +348,70 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.textMuted,
     lineHeight: 18,
+  },
+  premiumCtaCard: {
+    borderRadius: Radius.xxl,
+    borderWidth: 1,
+    borderColor: Colors.accentBorder,
+    backgroundColor: 'rgba(124, 92, 255, 0.10)',
+    padding: Spacing.lg,
+    gap: Spacing.md,
+    marginBottom: Spacing.lg,
+  },
+  premiumCtaHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  premiumCtaIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: Radius.full,
+    backgroundColor: Colors.accentBg,
+    borderWidth: 1,
+    borderColor: Colors.accentBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  premiumCtaCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  premiumCtaTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: Colors.text,
+  },
+  premiumCtaText: {
+    fontSize: 13,
+    color: Colors.textMuted,
+    lineHeight: 18,
+  },
+  priceGrid: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  pricePill: {
+    flex: 1,
+    padding: Spacing.sm,
+    borderRadius: Radius.lg,
+    backgroundColor: 'rgba(5, 8, 23, 0.42)',
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    gap: 2,
+  },
+  priceLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.textDim,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  priceValue: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: Colors.text,
   },
 
   // Pack grid
@@ -435,6 +534,13 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     marginBottom: Spacing.md,
   },
+  packWhy: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.text,
+    lineHeight: 18,
+    marginBottom: Spacing.sm,
+  },
   teaserList: {
     gap: 9,
     paddingTop: Spacing.sm,
@@ -478,7 +584,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderBottomWidth: 0,
     borderColor: Colors.border,
-    maxHeight: '88%',
   },
   modalScroll: {
     flexGrow: 0,
@@ -496,7 +601,7 @@ const styles = StyleSheet.create({
   modalContent: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
-    paddingBottom: Spacing.lg,
+    paddingBottom: Spacing.xl,
   },
 
   // Modal header row

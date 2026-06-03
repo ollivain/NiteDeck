@@ -33,10 +33,10 @@ function getNightTitle(night: SavedNight, nightNumber: number): string {
   if (night.title) return night.title;
   const dateStr = formatNightDate(night.createdAt);
   if (night.gameType === 'truth-or-dare') {
-    return dateStr ? `Truth or Dare · ${dateStr}` : 'Truth or Dare Night';
+    return dateStr ? `Truth or Dare - ${dateStr}` : 'Truth or Dare Night';
   }
   const modeLabel = getNightDisplay(night).name;
-  return dateStr ? `${modeLabel} Night · ${dateStr}` : `Night #${nightNumber}`;
+  return dateStr ? `${modeLabel} Night - ${dateStr}` : `Night #${nightNumber}`;
 }
 
 type SavedNightCardProps = {
@@ -108,6 +108,7 @@ export default function MemoriesScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Memories</Text>
+          <Text style={styles.trustText}>Saved nights stay on this device. Nothing is uploaded.</Text>
         </View>
 
         {total > 0 ? (
@@ -158,10 +159,16 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: Spacing.xl,
+    gap: Spacing.sm,
   },
   title: {
     ...Typography.h1,
     color: Colors.text,
+  },
+  trustText: {
+    fontSize: 13,
+    color: Colors.textDim,
+    lineHeight: 18,
   },
   nightsList: {
     gap: Spacing.sm,
