@@ -1,15 +1,26 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import type { Card, Mode } from '@/data/types';
+import type { CardIntensity, CardType } from '@/data/types';
+
+export type CardDisplayConfig = {
+  primary: string;
+  name: string;
+  emoji: string;
+};
 
 type GameCardProps = {
-  card: Card;
-  mode: Mode;
+  card: {
+    type: CardType;
+    label: string;
+    text: string;
+    intensity?: CardIntensity;
+  };
+  displayConfig: CardDisplayConfig;
   cardNumber: number;
   totalCards: number;
 };
 
-const typeDots: Record<Card['type'], number> = {
+const typeDots: Record<CardType, number> = {
   question: 1,
   vote: 1,
   pick: 2,
@@ -24,16 +35,16 @@ function cardFontSize(len: number): number {
   return 25;
 }
 
-export function GameCard({ card, mode, cardNumber, totalCards }: GameCardProps) {
-  const cfg = Colors.modes[mode];
+export function GameCard({ card, displayConfig, cardNumber, totalCards }: GameCardProps) {
+  const { primary, name, emoji } = displayConfig;
   const fontSize = cardFontSize(card.text.length);
   const dots = card.intensity ?? typeDots[card.type];
 
   return (
-    <View style={[styles.card, { borderColor: cfg.primary }]}>
+    <View style={[styles.card, { borderColor: primary }]}>
       <View style={styles.topRow}>
-        <View style={[styles.typeTag, { borderColor: cfg.primary }]}>
-          <Text style={[styles.typeLabel, { color: cfg.primary }]}>
+        <View style={[styles.typeTag, { borderColor: primary }]}>
+          <Text style={[styles.typeLabel, { color: primary }]}>
             {card.label}
           </Text>
         </View>
@@ -43,7 +54,7 @@ export function GameCard({ card, mode, cardNumber, totalCards }: GameCardProps) 
               key={i}
               style={[
                 styles.typeDot,
-                { backgroundColor: i < dots ? cfg.primary : 'rgba(214, 203, 255, 0.15)' },
+                { backgroundColor: i < dots ? primary : 'rgba(214, 203, 255, 0.15)' },
               ]}
             />
           ))}
@@ -57,8 +68,8 @@ export function GameCard({ card, mode, cardNumber, totalCards }: GameCardProps) 
       </View>
 
       <View style={styles.footer}>
-        <View style={[styles.modeChip, { borderColor: cfg.primary }]}>
-          <Text style={[styles.modeName, { color: cfg.primary }]}>{cfg.emoji}  {cfg.name}</Text>
+        <View style={[styles.modeChip, { borderColor: primary }]}>
+          <Text style={[styles.modeName, { color: primary }]}>{emoji}  {name}</Text>
         </View>
         <Text style={styles.counter}>{cardNumber}/{totalCards}</Text>
       </View>

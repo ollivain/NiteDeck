@@ -19,3 +19,4 @@ Open the app in Expo Go or a development build. A real device is recommended for
 ## Beta testing
 
 See [BETA_TESTING.md](./BETA_TESTING.md) for the full testing checklist, known limitations, and feedback guide.
+The checklist includes a dedicated Premium Packs QA section for locked previews, dev unlocks, Classic gameplay, Recap, Memories, and free-mode regressions.

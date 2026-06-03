@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { premiumPackMetadata } from '@/data/packs';
 import { useSessionStore } from '@/store/session';
 import type { SavedNight } from '@/store/session';
 
@@ -16,14 +17,25 @@ function gameTypeLabel(night: SavedNight) {
   return night.gameType === 'truth-or-dare' ? 'Truth or Dare' : 'Classic';
 }
 
+function getNightDisplay(night: SavedNight): { primary: string; name: string } {
+  if (night.packId) {
+    const pack = premiumPackMetadata[night.packId];
+    return { primary: Colors.accent, name: pack?.title ?? 'Premium' };
+  }
+  if (night.mode) {
+    const cfg = Colors.modes[night.mode];
+    return { primary: cfg.primary, name: cfg.name };
+  }
+  return { primary: Colors.accent, name: 'NiteDeck' };
+}
+
 function getNightTitle(night: SavedNight, nightNumber: number): string {
   if (night.title) return night.title;
   const dateStr = formatNightDate(night.createdAt);
-  const modeLabel =
-    night.mode === 'wild' ? 'Wild' : night.mode === 'spicy' ? 'Spicy' : 'Chill';
   if (night.gameType === 'truth-or-dare') {
     return dateStr ? `Truth or Dare · ${dateStr}` : 'Truth or Dare Night';
   }
+  const modeLabel = getNightDisplay(night).name;
   return dateStr ? `${modeLabel} Night · ${dateStr}` : `Night #${nightNumber}`;
 }
 
@@ -35,7 +47,7 @@ type SavedNightCardProps = {
 
 function SavedNightCard({ night, nightNumber, onPress }: SavedNightCardProps) {
   const firstMedia = night.mediaMoments[0];
-  const modeCfg = Colors.modes[night.mode];
+  const display = getNightDisplay(night);
   const mediaCount = night.mediaMoments.length;
   const title = getNightTitle(night, nightNumber);
 
@@ -61,7 +73,7 @@ function SavedNightCard({ night, nightNumber, onPress }: SavedNightCardProps) {
         <View style={styles.nightMeta}>
           <Text style={styles.nightGameType}>{gameTypeLabel(night)}</Text>
           <Text style={styles.nightDot}>·</Text>
-          <Text style={[styles.nightMode, { color: modeCfg.primary }]}>{modeCfg.name}</Text>
+          <Text style={[styles.nightMode, { color: display.primary }]}>{display.name}</Text>
         </View>
 
         <View style={styles.nightFooter}>

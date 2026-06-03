@@ -26,8 +26,9 @@ import { PressableScale } from '@/components/ui/PressableScale';
 import { AwardCard } from '@/components/recap/AwardCard';
 import { FullscreenMediaViewer, shareMediaMoment } from '@/components/recap/FullscreenMediaViewer';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
-import { cardsById } from '@/data/cards';
-import type { GameType, Mode } from '@/data/types';
+import { getCardById } from '@/data/cards';
+import { premiumPackMetadata } from '@/data/packs';
+import type { GameSelection, GameType, Mode } from '@/data/types';
 import { useSessionStore } from '@/store/session';
 import type { MediaMoment, Player, PlayedCard } from '@/store/session';
 
@@ -292,6 +293,7 @@ function MemoryWall({ gameType, mediaItems, onOpenMedia }: MemoryWallProps) {
 
 function buildHighlight(
   gameType: GameType | null,
+  selection: GameSelection | null,
   mode: Mode | null,
   played: PlayedCard[],
   mediaItems: MediaMoment[]
@@ -307,8 +309,18 @@ function buildHighlight(
     };
   }
 
+  if (selection?.kind === 'pack') {
+    const completed = played.filter(p => !p.skipped).length;
+    return {
+      icon: 'sparkles' as const,
+      title: 'PACK ENERGY',
+      value: played.length >= 10 ? 'FULL SEND' : 'GOOD SESSION',
+      detail: `${completed} completed card${completed !== 1 ? 's' : ''}`,
+    };
+  }
+
   const cameraOrChaos = played.filter(({ cardId }) => {
-    const card = cardsById[cardId];
+    const card = getCardById(cardId);
     return card?.type === 'camera' || card?.type === 'chaos';
   }).length;
 
@@ -344,6 +356,7 @@ export default function RecapScreen() {
   const players = useSessionStore(s => s.players);
   const gameType = useSessionStore(s => s.gameType);
   const mode = useSessionStore(s => s.mode);
+  const selection = useSessionStore(s => s.selection);
   const played = useSessionStore(s => s.played);
   const startedAt = useSessionStore(s => s.startedAt);
   const endedAt = useSessionStore(s => s.endedAt);
@@ -368,13 +381,27 @@ export default function RecapScreen() {
     ? heroCount === 1 ? 'turn' : 'turns'
     : heroCount === 1 ? 'card' : 'cards';
   const recapTitle = isTruthOrDare ? 'TRUTH OR DARE RECAP' : 'NIGHT RECAP';
-  const modeCfg = mode ? Colors.modes[mode] : null;
-  const heroSub = isTruthOrDare ? 'Truths told. Dares survived.' : mode ? HERO_SUBTITLES[mode] : '';
+  const sessionDisplay = (() => {
+    if (selection?.kind === 'pack') {
+      const pack = premiumPackMetadata[selection.packId];
+      return { primary: Colors.accent, bg: Colors.accentBg, borderSelected: Colors.accentBorder, name: pack.title, emoji: '✦' };
+    }
+    if (mode) {
+      const cfg = Colors.modes[mode];
+      return { primary: cfg.primary, bg: cfg.bg, borderSelected: cfg.borderSelected, name: cfg.name, emoji: cfg.emoji };
+    }
+    return null;
+  })();
+  const heroSub = (() => {
+    if (isTruthOrDare) return 'Truths told. Dares survived.';
+    if (selection?.kind === 'pack') return `${premiumPackMetadata[selection.packId].title} cards played`;
+    return mode ? HERO_SUBTITLES[mode] : '';
+  })();
   const mediaItems: MediaMoment[] = mediaMoments.length > 0
     ? mediaMoments
     : mediaUris.map((uri, i) => ({ uri, mediaType: 'photo', createdAt: i }));
   const recapSaveKey = gameType && startedAt && endedAt ? `${gameType}-${startedAt}-${endedAt}` : null;
-  const highlight = buildHighlight(gameType, mode, played, mediaItems);
+  const highlight = buildHighlight(gameType, selection, mode, played, mediaItems);
   const awards = computeAwards(players, played);
 
   const playerStats = players
@@ -489,21 +516,21 @@ export default function RecapScreen() {
           <TouchableOpacity onPress={handleBack} hitSlop={8} style={styles.backBtn}>
             <Ionicons name="arrow-back" size={20} color={Colors.textMuted} />
           </TouchableOpacity>
-          {modeCfg && (
-            <View style={[styles.modeBadge, { backgroundColor: modeCfg.bg, borderColor: modeCfg.borderSelected }]}>
-              <Text style={styles.modeEmoji}>{modeCfg.emoji}</Text>
-              <Text style={[styles.modeBadgeText, { color: modeCfg.primary }]}>
-                {modeCfg.name.toUpperCase()}
+          {sessionDisplay && (
+            <View style={[styles.modeBadge, { backgroundColor: sessionDisplay.bg, borderColor: sessionDisplay.borderSelected }]}>
+              <Text style={styles.modeEmoji}>{sessionDisplay.emoji}</Text>
+              <Text style={[styles.modeBadgeText, { color: sessionDisplay.primary }]}>
+                {sessionDisplay.name.toUpperCase()}
               </Text>
             </View>
           )}
         </View>
 
-        <View style={[styles.heroCard, modeCfg && { borderColor: modeCfg.borderSelected }]}>
-          <Text style={[styles.kicker, modeCfg && { color: modeCfg.primary }]}>{recapTitle}</Text>
+        <View style={[styles.heroCard, sessionDisplay && { borderColor: sessionDisplay.borderSelected }]}>
+          <Text style={[styles.kicker, sessionDisplay && { color: sessionDisplay.primary }]}>{recapTitle}</Text>
           <View style={styles.heroRow}>
             <Text style={styles.heroNum} numberOfLines={1} adjustsFontSizeToFit>{heroCount}</Text>
-            <Text style={[styles.heroUnit, modeCfg && { color: modeCfg.primary }]}>
+            <Text style={[styles.heroUnit, sessionDisplay && { color: sessionDisplay.primary }]}>
               {heroUnit}
             </Text>
           </View>
@@ -537,7 +564,7 @@ export default function RecapScreen() {
         <View style={styles.memorySection}>
           <View style={styles.sectionRow}>
             <View style={styles.sectionTitleWrap}>
-              <Text style={[styles.sectionLabel, modeCfg && { color: modeCfg.primary }]}>MEMORY WALL</Text>
+              <Text style={[styles.sectionLabel, sessionDisplay && { color: sessionDisplay.primary }]}>MEMORY WALL</Text>
               <Text style={styles.sectionHint}>
                 {mediaItems.length > 0 ? 'The moments that made the night' : 'Ready for next time'}
               </Text>
@@ -568,12 +595,12 @@ export default function RecapScreen() {
           <MemoryWall gameType={gameType} mediaItems={mediaItems} onOpenMedia={openMedia} />
         </View>
 
-        <View style={[styles.highlightCard, modeCfg && { borderColor: modeCfg.borderSelected }]}>
-          <View style={[styles.highlightIcon, modeCfg && { backgroundColor: modeCfg.bg, borderColor: modeCfg.borderSelected }]}>
-            <Ionicons name={highlight.icon} size={18} color={modeCfg?.primary ?? Colors.accent} />
+        <View style={[styles.highlightCard, sessionDisplay && { borderColor: sessionDisplay.borderSelected }]}>
+          <View style={[styles.highlightIcon, sessionDisplay && { backgroundColor: sessionDisplay.bg, borderColor: sessionDisplay.borderSelected }]}>
+            <Ionicons name={highlight.icon} size={18} color={sessionDisplay?.primary ?? Colors.accent} />
           </View>
           <View style={styles.highlightCopy}>
-            <Text style={[styles.highlightTitle, modeCfg && { color: modeCfg.primary }]}>{highlight.title}</Text>
+            <Text style={[styles.highlightTitle, sessionDisplay && { color: sessionDisplay.primary }]}>{highlight.title}</Text>
             <Text style={styles.highlightValue}>{highlight.value}</Text>
             <Text style={styles.highlightDetail}>{highlight.detail}</Text>
           </View>

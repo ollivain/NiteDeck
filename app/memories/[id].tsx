@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { FullscreenMediaViewer } from '@/components/recap/FullscreenMediaViewer';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { premiumPackMetadata } from '@/data/packs';
 import { useSessionStore } from '@/store/session';
 import type { SavedNight } from '@/store/session';
 
@@ -30,14 +31,25 @@ function gameTypeLabel(gameType: string) {
   return gameType === 'truth-or-dare' ? 'Truth or Dare' : 'Classic';
 }
 
+function getNightDisplay(night: SavedNight): { primary: string; name: string } {
+  if (night.packId) {
+    const pack = premiumPackMetadata[night.packId];
+    return { primary: Colors.accent, name: pack?.title ?? 'Premium' };
+  }
+  if (night.mode) {
+    const cfg = Colors.modes[night.mode];
+    return { primary: cfg.primary, name: cfg.name };
+  }
+  return { primary: Colors.accent, name: 'NiteDeck' };
+}
+
 function getNightTitle(night: SavedNight, nightNumber: number | null): string {
   if (night.title) return night.title;
   const dateStr = formatNightDate(night.createdAt);
-  const modeLabel =
-    night.mode === 'wild' ? 'Wild' : night.mode === 'spicy' ? 'Spicy' : 'Chill';
   if (night.gameType === 'truth-or-dare') {
     return dateStr ? `Truth or Dare · ${dateStr}` : 'Truth or Dare Night';
   }
+  const modeLabel = getNightDisplay(night).name;
   return dateStr ? `${modeLabel} Night · ${dateStr}` : `Night #${nightNumber ?? '?'}`;
 }
 
@@ -126,7 +138,7 @@ export default function NightDetailScreen() {
     );
   }
 
-  const modeCfg = Colors.modes[night.mode];
+  const nightDisplay = getNightDisplay(night);
   const mediaItems = night.mediaMoments;
   const dateStr = formatNightDate(night.createdAt);
   const displayTitle = getNightTitle(night, nightNumber);
@@ -195,7 +207,7 @@ export default function NightDetailScreen() {
           <View style={styles.metaRow}>
             <Text style={styles.metaText}>{gameTypeLabel(night.gameType)}</Text>
             <Text style={styles.metaDot}>·</Text>
-            <Text style={[styles.metaMode, { color: modeCfg.primary }]}>{modeCfg.name}</Text>
+            <Text style={[styles.metaMode, { color: nightDisplay.primary }]}>{nightDisplay.name}</Text>
             {dateStr ? (
               <>
                 <Text style={styles.metaDot}>·</Text>

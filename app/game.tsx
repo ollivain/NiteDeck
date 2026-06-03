@@ -16,14 +16,16 @@ import { Button } from '@/components/ui/Button';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useSessionStore } from '@/store/session';
-import { cardsById } from '@/data/cards';
+import { cardsById, premiumCardsById } from '@/data/cards';
+import { premiumPackMetadata } from '@/data/packs';
+import type { CardDisplayConfig } from '@/components/game/GameCard';
 
 type CardAdvanceAction = 'done' | 'skip';
 
 export default function GameScreen() {
   const players = useSessionStore(s => s.players);
   const gameType = useSessionStore(s => s.gameType);
-  const mode = useSessionStore(s => s.mode);
+  const selection = useSessionStore(s => s.selection);
   const deck = useSessionStore(s => s.deck);
   const deckIndex = useSessionStore(s => s.deckIndex);
   const currentPlayerIndex = useSessionStore(s => s.currentPlayerIndex);
@@ -39,7 +41,10 @@ export default function GameScreen() {
   const cardScale = useSharedValue(1);
   const cardTranslateY = useSharedValue(0);
   const currentPlayer = players.length > 0 ? players[currentPlayerIndex % players.length] : undefined;
-  const currentCard = deck[deckIndex] ? cardsById[deck[deckIndex]] : undefined;
+  const rawCard = deck[deckIndex]
+    ? (cardsById[deck[deckIndex]] ?? premiumCardsById[deck[deckIndex]])
+    : undefined;
+  const currentCard = rawCard;
   const hasEnoughPlayers = players.length >= 2;
   const hasStarted = Boolean(startedAt);
   const isCameraCard = currentCard?.type === 'camera';
@@ -47,7 +52,7 @@ export default function GameScreen() {
   const invalidGameState =
     gameType !== 'classic' ||
     !hasEnoughPlayers ||
-    !mode ||
+    !selection ||
     !hasStarted ||
     deck.length === 0 ||
     (!currentCard && !isDeckEmpty);
@@ -72,7 +77,7 @@ export default function GameScreen() {
       return;
     }
 
-    if (!mode) {
+    if (!selection) {
       router.replace('/mode');
       return;
     }
@@ -80,7 +85,7 @@ export default function GameScreen() {
     if (!hasStarted || deck.length === 0 || (!currentCard && !isDeckEmpty)) {
       router.replace('/rules');
     }
-  }, [currentCard, deck.length, gameType, hasEnoughPlayers, hasStarted, isDeckEmpty, mode]));
+  }, [currentCard, deck.length, gameType, hasEnoughPlayers, hasStarted, isDeckEmpty, selection]));
 
   const finishCardTransition = useCallback((action: CardAdvanceAction) => {
     if (action === 'done') {
@@ -162,10 +167,24 @@ export default function GameScreen() {
     return null;
   }
 
+  // Derive display config now that selection is guaranteed non-null
+  const displayConfig: CardDisplayConfig = (() => {
+    if (selection!.kind === 'pack') {
+      const pack = premiumPackMetadata[selection!.packId];
+      return { primary: Colors.accent, name: pack.title, emoji: '✦' };
+    }
+    const cfg = Colors.modes[selection!.mode];
+    return { primary: cfg.primary, name: cfg.name, emoji: cfg.emoji };
+  })();
+
+  const accentPrimary = displayConfig.primary;
+  const accentBorder = selection!.kind === 'pack'
+    ? Colors.accentBorder
+    : Colors.modes[selection!.mode].border;
+
   if (isDeckEmpty) {
     return (
       <SafeAreaView style={styles.container}>
-
         <View style={styles.emptyState}>
           <Text style={styles.emptyEmoji}>🎴</Text>
           <Text style={styles.emptyTitle}>Deck is empty!</Text>
@@ -180,17 +199,15 @@ export default function GameScreen() {
     );
   }
 
-  const modeCfg = Colors.modes[mode!];
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
         <View style={styles.playerPill}>
-          <View style={[styles.dot, { backgroundColor: modeCfg.primary }]} />
+          <View style={[styles.dot, { backgroundColor: accentPrimary }]} />
           <Text style={styles.playerName} numberOfLines={1}>
             {currentPlayer?.name ?? '?'}
           </Text>
-          <Text style={styles.turnSuffix}>{'’s turn'}</Text>
+          <Text style={styles.turnSuffix}>{"'s turn"}</Text>
         </View>
         <View style={styles.topActions}>
           <PressableScale onPress={handleEndGame} style={styles.endBtn} hitSlop={8} pressedScale={0.97}>
@@ -209,7 +226,7 @@ export default function GameScreen() {
               style={[
                 styles.progressSegment,
                 i < filled
-                  ? { backgroundColor: modeCfg.primary }
+                  ? { backgroundColor: accentPrimary }
                   : { backgroundColor: 'rgba(214, 203, 255, 0.1)' },
               ]}
             />
@@ -222,7 +239,7 @@ export default function GameScreen() {
           {currentCard && (
             <GameCard
               card={currentCard}
-              mode={mode!}
+              displayConfig={displayConfig}
               cardNumber={deckIndex + 1}
               totalCards={deck.length}
             />
@@ -240,8 +257,8 @@ export default function GameScreen() {
             style={[
               styles.cameraFab,
               {
-                shadowColor: isCameraCard ? Colors.accent : modeCfg.primary,
-                borderColor: isCameraCard ? Colors.accent : modeCfg.border,
+                shadowColor: isCameraCard ? Colors.accent : accentPrimary,
+                borderColor: isCameraCard ? Colors.accent : accentBorder,
               },
               isCameraCard && styles.cameraFabActive,
             ]}

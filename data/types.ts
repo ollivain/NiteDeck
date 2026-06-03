@@ -7,6 +7,10 @@ export type PackId =
   | 'truth-bombs'
   | 'couples-chemistry'
   | 'after-dark';
+
+export type GameSelection =
+  | { kind: 'mode'; mode: Mode }
+  | { kind: 'pack'; packId: PackId };
 export type CardSourceKind = 'core-mode' | 'premium-pack';
 export type CardSourceId = Mode | PackId;
 export type CardType = 'question' | 'vote' | 'pick' | 'challenge' | 'camera' | 'chaos';
@@ -28,6 +32,19 @@ export type PremiumPackMetadata = CardSourceMetadata & {
   premium: true;
   locked: true;
   comingSoon: true;
+  vibeLabel: string;
+  cardCount: number;
+  previewLines: string[];
+  previewCardIds: string[];
+};
+
+export type PremiumCard = {
+  id: string;
+  packId: PackId;
+  type: CardType;
+  label: string;
+  text: string;
+  intensity?: CardIntensity;
 };
 
 export type Card = {

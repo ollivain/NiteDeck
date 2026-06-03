@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/Button';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 import { useSessionStore } from '@/store/session';
+import { premiumPackMetadata } from '@/data/packs';
 
 const RULES = [
   'All cards are optional.',
@@ -17,12 +18,29 @@ const RULES = [
 export default function RulesScreen() {
   const players = useSessionStore(s => s.players);
   const gameType = useSessionStore(s => s.gameType);
-  const mode = useSessionStore(s => s.mode);
+  const selection = useSessionStore(s => s.selection);
   const startGame = useSessionStore(s => s.startGame);
   const [isStarting, setIsStarting] = useState(false);
   const startLockRef = useRef(false);
   const hasEnoughPlayers = players.length >= 2;
-  const modeCfg = mode ? Colors.modes[mode] : null;
+
+  // Derive display config from selection
+  const selectionDisplay = (() => {
+    if (!selection) return null;
+    if (selection.kind === 'mode') {
+      const cfg = Colors.modes[selection.mode];
+      return { name: cfg.name.toUpperCase(), primary: cfg.primary, bg: cfg.bg, border: cfg.borderSelected };
+    }
+    const pack = premiumPackMetadata[selection.packId];
+    return {
+      name: pack.title.toUpperCase(),
+      primary: Colors.accent,
+      bg: Colors.accentBg,
+      border: Colors.accentBorder,
+    };
+  })();
+
+  const primaryColor = selectionDisplay?.primary ?? Colors.accent;
 
   useFocusEffect(useCallback(() => {
     if (!gameType) {
@@ -35,13 +53,13 @@ export default function RulesScreen() {
       return;
     }
 
-    if (!mode) {
+    if (!selection) {
       router.replace('/mode');
     }
-  }, [gameType, hasEnoughPlayers, mode]));
+  }, [gameType, hasEnoughPlayers, selection]));
 
   const handleStart = () => {
-    if (startLockRef.current || !gameType || !hasEnoughPlayers || !mode) return;
+    if (startLockRef.current || !gameType || !hasEnoughPlayers || !selection) return;
 
     startLockRef.current = true;
     setIsStarting(true);
@@ -77,9 +95,14 @@ export default function RulesScreen() {
           <View style={styles.titleBlock}>
             <Text style={styles.kicker}>Before the night starts</Text>
             <Text style={styles.title}>House Rules</Text>
-            {modeCfg ? (
-              <View style={[styles.modePill, { backgroundColor: modeCfg.bg, borderColor: modeCfg.borderSelected }]}>
-                <Text style={[styles.modePillText, { color: modeCfg.primary }]}>{modeCfg.name.toUpperCase()}</Text>
+            {selectionDisplay ? (
+              <View style={[
+                styles.modePill,
+                { backgroundColor: selectionDisplay.bg, borderColor: selectionDisplay.border },
+              ]}>
+                <Text style={[styles.modePillText, { color: selectionDisplay.primary }]}>
+                  {selectionDisplay.name}
+                </Text>
               </View>
             ) : null}
           </View>
@@ -87,7 +110,7 @@ export default function RulesScreen() {
           <View style={styles.rulesList}>
             {RULES.map((rule, index) => (
               <View key={rule} style={[styles.ruleRow, index === RULES.length - 1 && styles.ruleRowLast]}>
-                <Text style={[styles.ruleNum, modeCfg && { color: modeCfg.primary }]}>
+                <Text style={[styles.ruleNum, { color: primaryColor }]}>
                   {String(index + 1).padStart(2, '0')}
                 </Text>
                 <Text style={styles.ruleText}>{rule}</Text>
@@ -101,7 +124,7 @@ export default function RulesScreen() {
             label="Start the night"
             onPress={handleStart}
             fullWidth
-            disabled={!gameType || !hasEnoughPlayers || !mode || isStarting}
+            disabled={!gameType || !hasEnoughPlayers || !selection || isStarting}
           />
           <Button label="Back" onPress={() => router.back()} variant="ghost" fullWidth />
         </View>
@@ -184,7 +207,6 @@ const styles = StyleSheet.create({
   ruleNum: {
     fontSize: 12,
     fontWeight: '900',
-    color: '#A78BFA',
     letterSpacing: 1,
     width: 22,
     lineHeight: 26,

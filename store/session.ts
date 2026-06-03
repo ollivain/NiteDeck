@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { allCards } from '@/data/cards';
+import { allCards, premiumCardsByPack } from '@/data/cards';
 import { truthOrDareCards } from '@/data/truthOrDare';
-import type { GameType, Mode, TruthOrDareChoice } from '@/data/types';
+import type { GameSelection, GameType, Mode, PackId, TruthOrDareChoice } from '@/data/types';
 
 export type Player = {
   id: string;
@@ -28,7 +28,8 @@ export type SavedNight = {
   createdAt: string;
   title?: string;
   gameType: GameType;
-  mode: Mode;
+  mode: Mode | null;
+  packId?: PackId;
   players: string[];
   mediaMoments: MediaMoment[];
   stats: {
@@ -57,6 +58,9 @@ type SessionStore = {
   mediaUris: string[];
   mediaMoments: MediaMoment[];
   savedNights: SavedNight[];
+
+  selection: GameSelection | null;
+  setSelection: (selection: GameSelection) => void;
 
   addPlayer: (name: string) => void;
   removePlayer: (id: string) => void;
@@ -161,6 +165,7 @@ const defaultState = {
   players: [] as Player[],
   gameType: null as GameType | null,
   mode: null as Mode | null,
+  selection: null as GameSelection | null,
   startedAt: null as number | null,
   endedAt: null as number | null,
   currentPlayerIndex: 0,
@@ -197,13 +202,22 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
   setGameType: (gameType: GameType) => set({ gameType }),
 
-  setMode: (mode: Mode) => set({ mode }),
+  setMode: (mode: Mode) => set({ mode, selection: { kind: 'mode', mode } }),
+
+  setSelection: (selection: GameSelection) => {
+    if (selection.kind === 'mode') {
+      set({ selection, mode: selection.mode });
+    } else {
+      set({ selection, mode: null });
+    }
+  },
 
   startGame: () => {
-    const { gameType, mode, players } = get();
-    if (!mode || players.length < 2) return false;
+    const { gameType, mode, players, selection } = get();
+    if (!selection || players.length < 2) return false;
 
     if (gameType === 'truth-or-dare') {
+      if (selection.kind !== 'mode') return false;
       const truthDeck = shuffleArray(
         truthOrDareCards.filter(c => c.mode === mode && c.choice === 'truth')
       ).map(c => c.id);
@@ -232,24 +246,49 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
     if (gameType !== 'classic') return false;
 
-    const modeCards = allCards.filter(c => c.mode === mode);
-    if (modeCards.length === 0) return false;
-    const deck = shuffleArray(modeCards).map(c => c.id);
-    set({
-      deck,
-      deckIndex: 0,
-      truthOrDareTruthDeck: [],
-      truthOrDareDareDeck: [],
-      truthOrDareTruthIndex: 0,
-      truthOrDareDareIndex: 0,
-      pendingTruthOrDareChoice: null,
-      pendingTruthOrDareCardId: null,
-      currentPlayerIndex: 0,
-      played: [],
-      startedAt: Date.now(),
-      endedAt: null,
-    });
-    return true;
+    if (selection.kind === 'mode') {
+      const modeCards = allCards.filter(c => c.mode === selection.mode);
+      if (modeCards.length === 0) return false;
+      const deck = shuffleArray(modeCards).map(c => c.id);
+      set({
+        deck,
+        deckIndex: 0,
+        truthOrDareTruthDeck: [],
+        truthOrDareDareDeck: [],
+        truthOrDareTruthIndex: 0,
+        truthOrDareDareIndex: 0,
+        pendingTruthOrDareChoice: null,
+        pendingTruthOrDareCardId: null,
+        currentPlayerIndex: 0,
+        played: [],
+        startedAt: Date.now(),
+        endedAt: null,
+      });
+      return true;
+    }
+
+    if (selection.kind === 'pack') {
+      const packCards = premiumCardsByPack[selection.packId] ?? [];
+      if (packCards.length === 0) return false;
+      const deck = shuffleArray(packCards).map(c => c.id);
+      set({
+        deck,
+        deckIndex: 0,
+        truthOrDareTruthDeck: [],
+        truthOrDareDareDeck: [],
+        truthOrDareTruthIndex: 0,
+        truthOrDareDareIndex: 0,
+        pendingTruthOrDareChoice: null,
+        pendingTruthOrDareCardId: null,
+        currentPlayerIndex: 0,
+        played: [],
+        startedAt: Date.now(),
+        endedAt: null,
+      });
+      return true;
+    }
+
+    return false;
   },
 
   chooseTruthOrDareCard: (choice: TruthOrDareChoice) => {
@@ -289,10 +328,10 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
   saveCurrentNight: () => {
     const state = get();
-    const { endedAt, gameType, mode, players, played, startedAt } = state;
+    const { endedAt, gameType, mode, players, played, startedAt, selection } = state;
 
     const hasActivity = played.length > 0 || state.mediaMoments.length > 0 || state.mediaUris.length > 0;
-    if (!gameType || !mode || !startedAt || !endedAt || !hasActivity) {
+    if (!gameType || !selection || !startedAt || !endedAt || !hasActivity) {
       return null;
     }
 
@@ -315,6 +354,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       createdAt: new Date(endedAt).toISOString(),
       gameType,
       mode,
+      packId: selection.kind === 'pack' ? selection.packId : undefined,
       players: players.map(player => player.name),
       // Saved night media currently uses local session URIs; durable file persistence can be added later.
       mediaMoments: mediaMoments.map(moment => ({ ...moment })),

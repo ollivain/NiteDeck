@@ -1,39 +1,55 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState } from 'react';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 import { premiumPacks } from '@/data/packs';
-import type { PackId } from '@/data/types';
+import { premiumCardsByPack } from '@/data/cards';
+import { PressableScale } from '@/components/ui/PressableScale';
+import { usePremiumStore } from '@/store/premium';
+import type { PackId, PremiumCard } from '@/data/types';
 
-const PACK_TEASERS: Record<PackId, string[]> = {
-  temptations: [
-    '"Would you rather kiss someone here or let the group decide who?"',
-    '"Pick someone in the room. Tell them one thing you find genuinely attractive about them."',
-    '"Rate your current romantic life from 1 to 10. Justify it."',
-  ],
-  roast: [
-    '"Everyone points to the person with the worst fashion sense. They have 20 seconds to defend it."',
-    '"Roast the person on your left in exactly two sentences. Keep it friendly."',
-    '"Vote on who would win a petty argument. They get to prove it right now."',
-  ],
-  'truth-bombs': [
-    '"Name something about yourself you have never admitted in a group setting."',
-    '"What is the most honest thing you could say about someone in this room?"',
-    '"Pick someone. Ask them anything. They have to answer in full."',
-  ],
-  'couples-chemistry': [
-    '"What is one small thing your person does that you hope they never stop?"',
-    '"Describe your ideal night with someone in two sentences. No clichés."',
-    '"Pick someone here. Tell them what you genuinely admire about how they love people."',
-  ],
-  'after-dark': [
-    '"What is the most reckless thing you have done this year that you would do again?"',
-    '"Admit something you only do after midnight."',
-    '"Name a moment tonight that would make a good opening scene for a film."',
-  ],
-};
+const FALLBACK_PREVIEW_COUNT = 5;
 
 export default function ShopScreen() {
+  const insets = useSafeAreaInsets();
+  const [selectedPackId, setSelectedPackId] = useState<PackId | null>(null);
+
+  // Premium entitlement state
+  const unlockedPackIds = usePremiumStore(s => s.unlockedPremiumPackIds);
+  const unlockForTesting = usePremiumStore(s => s.unlockPremiumPackForTesting);
+  const lockForTesting = usePremiumStore(s => s.lockPremiumPackForTesting);
+
+  const isUnlocked = (id: PackId) => unlockedPackIds.includes(id);
+
+  const selectedPack = selectedPackId
+    ? (premiumPacks.find(p => p.id === selectedPackId) ?? null)
+    : null;
+
+  const isSelectedPackUnlocked = selectedPack ? isUnlocked(selectedPack.id) : false;
+
+  const previewCards: PremiumCard[] = (() => {
+    if (!selectedPack || !selectedPackId) return [];
+    const packCards = premiumCardsByPack[selectedPackId] ?? [];
+    const ids = selectedPack.previewCardIds;
+    if (ids.length > 0) {
+      const byId = new Map(packCards.map(c => [c.id, c]));
+      const resolved = ids.map(id => byId.get(id)).filter((c): c is PremiumCard => c !== undefined);
+      if (resolved.length > 0) return resolved;
+    }
+    return packCards.slice(0, FALLBACK_PREVIEW_COUNT);
+  })();
+
+  const closeModal = () => setSelectedPackId(null);
+
+  const toggleUnlockForTesting = (packId: PackId) => {
+    if (isUnlocked(packId)) {
+      lockForTesting(packId);
+    } else {
+      unlockForTesting(packId);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -47,7 +63,7 @@ export default function ShopScreen() {
 
         <View style={styles.noticeCard}>
           <View style={styles.noticeIcon}>
-            <Ionicons name="sparkles" size={22} color="#A78BFA" />
+            <Ionicons name="sparkles" size={22} color={Colors.accent} />
           </View>
           <View style={styles.noticeCopy}>
             <Text style={styles.noticeTitle}>Core game is free</Text>
@@ -59,43 +75,194 @@ export default function ShopScreen() {
 
         <View style={styles.packGrid}>
           {premiumPacks.map(pack => {
-            const teasers = PACK_TEASERS[pack.id] ?? [];
+            const unlocked = isUnlocked(pack.id);
             return (
-              <View key={pack.id} style={styles.packCard}>
+              <PressableScale
+                key={pack.id}
+                style={styles.packCard}
+                onPress={() => setSelectedPackId(pack.id)}
+                onLongPress={__DEV__ ? () => toggleUnlockForTesting(pack.id) : undefined}
+                activeOpacity={0.85}
+                pressedScale={0.985}
+              >
                 <View style={styles.packGlow} />
+
+                {/* Status row */}
                 <View style={styles.packHeader}>
-                  <View style={styles.lockIcon}>
-                    <Ionicons name="lock-closed" size={18} color="#D8D2EA" />
-                  </View>
-                  <View style={styles.comingSoonBadge}>
-                    <Text style={styles.comingSoonText}>Coming soon</Text>
-                  </View>
+                  {unlocked ? (
+                    <View style={styles.unlockedIconCircle}>
+                      <Ionicons name="checkmark" size={16} color={UNLOCK_GREEN} />
+                    </View>
+                  ) : (
+                    <View style={styles.lockIcon}>
+                      <Ionicons name="lock-closed" size={16} color="#D8D2EA" />
+                    </View>
+                  )}
+                  {unlocked ? (
+                    <View style={styles.unlockedBadge}>
+                      <Text style={styles.unlockedBadgeText}>Unlocked</Text>
+                    </View>
+                  ) : (
+                    <View style={styles.comingSoonBadge}>
+                      <Text style={styles.comingSoonText}>Coming soon</Text>
+                    </View>
+                  )}
                 </View>
+
+                <View style={styles.vibeTag}>
+                  <Text style={styles.vibeText}>{pack.vibeLabel}</Text>
+                </View>
+
                 <Text style={styles.packTitle}>{pack.title}</Text>
+                <Text style={styles.cardCount}>{pack.cardCount} cards</Text>
                 <Text style={styles.packDescription}>{pack.description}</Text>
-                {teasers.length > 0 && (
+
+                {pack.previewLines.length > 0 && (
                   <View style={styles.teaserList}>
-                    {teasers.map((teaser, i) => (
+                    {pack.previewLines.map((line, i) => (
                       <View key={i} style={styles.teaserRow}>
                         <View style={styles.teaserDot} />
-                        <Text style={styles.teaserText}>{teaser}</Text>
+                        <Text style={styles.teaserText}>{line}</Text>
                       </View>
                     ))}
                   </View>
                 )}
-              </View>
+              </PressableScale>
             );
           })}
         </View>
       </ScrollView>
+
+      {/* Pack preview modal */}
+      <Modal
+        visible={selectedPack !== null}
+        transparent
+        animationType="slide"
+        onRequestClose={closeModal}
+        statusBarTranslucent
+      >
+        <View style={styles.modalRoot}>
+          <Pressable style={styles.backdrop} onPress={closeModal} />
+          <View
+            style={[
+              styles.sheet,
+              { paddingBottom: Math.max(insets.bottom, Spacing.lg) },
+            ]}
+          >
+            {/* Drag handle */}
+            <View style={styles.dragHandle} />
+
+            <ScrollView
+              style={styles.modalScroll}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.modalContent}
+              bounces={false}
+              nestedScrollEnabled
+              keyboardShouldPersistTaps="handled"
+            >
+              {selectedPack !== null && (
+                <>
+                  {/* Status row + close */}
+                  <View style={styles.modalTopRow}>
+                    {isSelectedPackUnlocked ? (
+                      <View style={styles.unlockedIconCircle}>
+                        <Ionicons name="checkmark" size={15} color={UNLOCK_GREEN} />
+                      </View>
+                    ) : (
+                      <View style={styles.modalLockIcon}>
+                        <Ionicons name="lock-closed" size={15} color="#D8D2EA" />
+                      </View>
+                    )}
+                    {isSelectedPackUnlocked ? (
+                      <View style={styles.unlockedBadge}>
+                        <Text style={styles.unlockedBadgeText}>Unlocked</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.comingSoonBadge}>
+                        <Text style={styles.comingSoonText}>Coming soon</Text>
+                      </View>
+                    )}
+                    <View style={styles.modalTopSpacer} />
+                    <PressableScale
+                      onPress={closeModal}
+                      style={styles.closeButton}
+                      activeOpacity={0.8}
+                      pressedScale={0.92}
+                    >
+                      <Ionicons name="close" size={17} color={Colors.textMuted} />
+                    </PressableScale>
+                  </View>
+
+                  {/* Vibe label */}
+                  <View style={styles.vibeTag}>
+                    <Text style={styles.vibeText}>{selectedPack.vibeLabel}</Text>
+                  </View>
+
+                  {/* Title */}
+                  <Text style={styles.modalTitle}>{selectedPack.title}</Text>
+
+                  {/* Card count */}
+                  <Text style={styles.cardCount}>{selectedPack.cardCount} cards</Text>
+
+                  {/* Description */}
+                  <Text style={styles.modalDescription}>{selectedPack.description}</Text>
+
+                  {/* Preview cards section */}
+                  <View style={styles.previewSection}>
+                    <Text style={styles.previewSectionLabel}>Preview cards</Text>
+                    <View style={styles.previewCardList}>
+                      {previewCards.map(card => (
+                        <View key={card.id} style={styles.previewCard}>
+                          <Text style={styles.previewCardLabel}>{card.label}</Text>
+                          <Text style={styles.previewCardText}>{card.text}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+
+                  {/* CTA */}
+                  <View style={styles.ctaRow}>
+                    {isSelectedPackUnlocked ? (
+                      <View style={styles.ctaUnlocked}>
+                        <Ionicons name="checkmark-circle" size={15} color={UNLOCK_GREEN} />
+                        <Text style={styles.ctaUnlockedText}>Unlocked</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.ctaLocked}>
+                        <Ionicons name="lock-closed" size={13} color={Colors.textDim} />
+                        <Text style={styles.ctaLockedText}>Coming soon</Text>
+                      </View>
+                    )}
+                  </View>
+
+                  {/* DEV-only toggle */}
+                  {__DEV__ && (
+                    <Pressable
+                      onPress={() => toggleUnlockForTesting(selectedPack.id)}
+                      style={styles.devToggle}
+                    >
+                      <Text style={styles.devToggleText}>
+                        {'DEV · '}
+                        {isSelectedPackUnlocked ? 'Lock pack' : 'Unlock pack'}
+                      </Text>
+                    </Pressable>
+                  )}
+                </>
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
 
+const UNLOCK_GREEN = '#4ADE80';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050817',
+    backgroundColor: Colors.bg,
   },
   scrollContent: {
     flexGrow: 1,
@@ -105,17 +272,18 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: Spacing.xl,
-    gap: Spacing.sm,
   },
   title: {
     ...Typography.h1,
     color: Colors.text,
   },
+
+  // Notice card
   noticeCard: {
     borderRadius: Radius.xxl,
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.22)',
-    backgroundColor: 'rgba(10, 15, 39, 0.9)',
+    borderColor: Colors.border,
+    backgroundColor: Colors.surface,
     padding: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
@@ -123,12 +291,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   noticeIcon: {
-    width: 50,
-    height: 50,
+    width: 48,
+    height: 48,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(124, 92, 255, 0.18)',
+    backgroundColor: Colors.accentBg,
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.2)',
+    borderColor: Colors.accentBorder,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -137,103 +305,333 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   noticeTitle: {
-    fontSize: 17,
-    fontWeight: '800',
+    fontSize: 15,
+    fontWeight: '700',
     color: Colors.text,
   },
   noticeText: {
     fontSize: 13,
-    color: '#C7C0D8',
+    color: Colors.textMuted,
     lineHeight: 18,
   },
+
+  // Pack grid
   packGrid: {
     gap: Spacing.md,
   },
   packCard: {
     borderRadius: Radius.xxl,
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.18)',
-    backgroundColor: 'rgba(10, 15, 39, 0.82)',
+    borderColor: Colors.border,
+    backgroundColor: Colors.surface,
     padding: Spacing.lg,
     overflow: 'hidden',
   },
   packGlow: {
     position: 'absolute',
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: 'rgba(124, 92, 255, 0.16)',
-    top: -76,
-    right: -36,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: 'rgba(124, 92, 255, 0.10)',
+    top: -80,
+    right: -40,
   },
   packHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
   },
+
+  // Lock / unlock icon circles
   lockIcon: {
-    width: 38,
-    height: 38,
+    width: 34,
+    height: 34,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.16)',
+    borderColor: Colors.borderSubtle,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  unlockedIconCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(74, 222, 128, 0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(74, 222, 128, 0.28)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Badges
   comingSoonBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(167, 139, 250, 0.15)',
+    backgroundColor: Colors.accentBg,
     borderWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.3)',
+    borderColor: Colors.accentBorder,
   },
   comingSoonText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#A78BFA',
-    letterSpacing: 0.5,
+    ...Typography.label,
+    color: Colors.accent,
     textTransform: 'uppercase',
   },
+  unlockedBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(74, 222, 128, 0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(74, 222, 128, 0.30)',
+  },
+  unlockedBadgeText: {
+    ...Typography.label,
+    color: UNLOCK_GREEN,
+    textTransform: 'uppercase',
+  },
+
+  // Vibe tag
+  vibeTag: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(167, 139, 250, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.20)',
+    marginBottom: 10,
+  },
+  vibeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.accent,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+
+  // Card count (shared)
+  cardCount: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: Colors.textDim,
+    marginBottom: Spacing.sm,
+    letterSpacing: 0.2,
+  },
+
+  // Pack card body
   packTitle: {
-    fontSize: 21,
+    fontSize: 22,
     fontWeight: '800',
     color: Colors.text,
-    fontFamily: 'serif',
-    marginBottom: 6,
+    letterSpacing: -0.4,
+    marginBottom: 4,
   },
   packDescription: {
     fontSize: 13,
-    color: '#C7C0D8',
+    color: Colors.textMuted,
     lineHeight: 19,
     marginBottom: Spacing.md,
   },
   teaserList: {
-    gap: 8,
-    paddingTop: 4,
+    gap: 9,
+    paddingTop: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(214, 203, 255, 0.1)',
+    borderTopColor: Colors.borderSubtle,
   },
   teaserRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 8,
+    gap: 9,
   },
   teaserDot: {
-    width: 4,
-    height: 4,
+    width: 3,
+    height: 3,
     borderRadius: 2,
-    backgroundColor: '#7C5CFF',
-    marginTop: 7,
+    backgroundColor: Colors.accent2,
+    marginTop: 8,
     flexShrink: 0,
   },
   teaserText: {
     flex: 1,
     fontSize: 12,
-    color: '#9B91B8',
+    color: Colors.textDim,
     lineHeight: 18,
     fontStyle: 'italic',
+  },
+
+  // Modal backdrop + sheet
+  modalRoot: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.72)',
+  },
+  sheet: {
+    backgroundColor: Colors.surface2,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: Colors.border,
+    maxHeight: '88%',
+  },
+  modalScroll: {
+    flexGrow: 0,
+    flexShrink: 1,
+  },
+  dragHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(214, 203, 255, 0.18)',
+    alignSelf: 'center',
+    marginTop: 10,
+    marginBottom: 2,
+  },
+  modalContent: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.lg,
+  },
+
+  // Modal header row
+  modalTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  modalLockIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalTopSpacer: {
+    flex: 1,
+  },
+  closeButton: {
+    width: 34,
+    height: 34,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Modal body
+  modalTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: Colors.text,
+    letterSpacing: -0.6,
+    marginBottom: 4,
+  },
+  modalDescription: {
+    fontSize: 14,
+    color: Colors.textMuted,
+    lineHeight: 20,
+    marginBottom: Spacing.lg,
+  },
+
+  // Preview cards section
+  previewSection: {
+    marginBottom: Spacing.lg,
+  },
+  previewSectionLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.textDim,
+    letterSpacing: 1.0,
+    textTransform: 'uppercase',
+    marginBottom: Spacing.sm,
+  },
+  previewCardList: {
+    gap: Spacing.sm,
+  },
+  previewCard: {
+    backgroundColor: 'rgba(10, 15, 39, 0.7)',
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    padding: Spacing.md,
+    gap: 6,
+  },
+  previewCardLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.accent,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  previewCardText: {
+    fontSize: 14,
+    color: Colors.text,
+    lineHeight: 20,
+  },
+
+  // CTA row
+  ctaRow: {
+    paddingTop: 4,
+  },
+  ctaLocked: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: Radius.xl,
+    borderWidth: 1.5,
+    borderColor: Colors.borderSubtle,
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    opacity: 0.55,
+  },
+  ctaLockedText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: Colors.textDim,
+    letterSpacing: 0.3,
+  },
+  ctaUnlocked: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: Radius.xl,
+    borderWidth: 1.5,
+    borderColor: 'rgba(74, 222, 128, 0.30)',
+    backgroundColor: 'rgba(74, 222, 128, 0.06)',
+  },
+  ctaUnlockedText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: UNLOCK_GREEN,
+    letterSpacing: 0.3,
+  },
+
+  // DEV-only toggle
+  devToggle: {
+    marginTop: Spacing.md,
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+  },
+  devToggleText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: Colors.textDim,
+    letterSpacing: 0.5,
+    opacity: 0.6,
   },
 });
