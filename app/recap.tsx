@@ -217,7 +217,7 @@ function MemoryWall({ gameType, mediaItems, onOpenMedia }: MemoryWallProps) {
         <Text style={styles.memoryEmptyText}>
           {isTruthOrDare
             ? 'Photos and videos you save will appear here.'
-            : 'Camera Moments will turn next night&apos;s recap into a wall worth scrolling.'}
+            : 'Capture a camera moment during the game to fill this wall.'}
         </Text>
       </View>
     );
@@ -354,6 +354,7 @@ export default function RecapScreen() {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [selectedMediaIndex, setSelectedMediaIndex] = useState<number | null>(null);
   const [isSharingAll, setIsSharingAll] = useState(false);
+  const [nightSaved, setNightSaved] = useState(false);
   const savedNightIdRef = useRef<string | null>(null);
   const shareAllAlertOpenRef = useRef(false);
   const sharingAllLockRef = useRef(false);
@@ -390,6 +391,7 @@ export default function RecapScreen() {
     const savedNight = saveCurrentNight();
     if (savedNight) {
       savedNightIdRef.current = savedNight.id;
+      setNightSaved(true);
     }
   }, [recapSaveKey, saveCurrentNight]);
 
@@ -524,6 +526,13 @@ export default function RecapScreen() {
           <StatTile icon="people" value={players.length} label="PLAYERS" />
           <StatTile icon="time-outline" value={duration > 0 ? formatDuration(duration) : '-'} label="TIME" />
         </View>
+
+        {nightSaved && (
+          <View style={styles.savedBadge}>
+            <Ionicons name="checkmark-circle" size={14} color="#A78BFA" />
+            <Text style={styles.savedBadgeText}>Saved to Memories</Text>
+          </View>
+        )}
 
         <View style={styles.memorySection}>
           <View style={styles.sectionRow}>
@@ -742,6 +751,18 @@ const styles = StyleSheet.create({
     color: '#AFA8C8',
     letterSpacing: 0.6,
     textAlign: 'center',
+  },
+  savedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: Spacing.md,
+  },
+  savedBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#A78BFA',
   },
   memorySection: {
     marginTop: Spacing.xl,

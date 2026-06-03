@@ -16,6 +16,17 @@ function gameTypeLabel(night: SavedNight) {
   return night.gameType === 'truth-or-dare' ? 'Truth or Dare' : 'Classic';
 }
 
+function getNightTitle(night: SavedNight, nightNumber: number): string {
+  if (night.title) return night.title;
+  const dateStr = formatNightDate(night.createdAt);
+  const modeLabel =
+    night.mode === 'wild' ? 'Wild' : night.mode === 'spicy' ? 'Spicy' : 'Chill';
+  if (night.gameType === 'truth-or-dare') {
+    return dateStr ? `Truth or Dare · ${dateStr}` : 'Truth or Dare Night';
+  }
+  return dateStr ? `${modeLabel} Night · ${dateStr}` : `Night #${nightNumber}`;
+}
+
 type SavedNightCardProps = {
   night: SavedNight;
   nightNumber: number;
@@ -26,7 +37,7 @@ function SavedNightCard({ night, nightNumber, onPress }: SavedNightCardProps) {
   const firstMedia = night.mediaMoments[0];
   const modeCfg = Colors.modes[night.mode];
   const mediaCount = night.mediaMoments.length;
-  const dateStr = formatNightDate(night.createdAt);
+  const title = getNightTitle(night, nightNumber);
 
   return (
     <TouchableOpacity style={styles.nightCard} onPress={onPress} activeOpacity={0.82}>
@@ -45,7 +56,7 @@ function SavedNightCard({ night, nightNumber, onPress }: SavedNightCardProps) {
       </View>
 
       <View style={styles.nightBody}>
-        <Text style={styles.nightNumber}>Night #{nightNumber}</Text>
+        <Text style={styles.nightTitle} numberOfLines={1}>{title}</Text>
 
         <View style={styles.nightMeta}>
           <Text style={styles.nightGameType}>{gameTypeLabel(night)}</Text>
@@ -62,7 +73,6 @@ function SavedNightCard({ night, nightNumber, onPress }: SavedNightCardProps) {
               </Text>
             </View>
           ) : null}
-          {dateStr ? <Text style={styles.nightDate}>{dateStr}</Text> : null}
         </View>
       </View>
 
@@ -104,7 +114,18 @@ export default function MemoriesScreen() {
             <View style={styles.emptyIcon}>
               <Ionicons name="images" size={26} color="#A78BFA" />
             </View>
-            <Text style={styles.emptyTitle}>No memories yet.</Text>
+            <Text style={styles.emptyTitle}>No nights saved yet</Text>
+            <Text style={styles.emptyText}>
+              Play a game and your recap will appear here.
+            </Text>
+            <TouchableOpacity
+              style={styles.emptyBtn}
+              onPress={() => router.push('/')}
+              activeOpacity={0.82}
+            >
+              <Text style={styles.emptyBtnText}>Play now</Text>
+              <Ionicons name="arrow-forward" size={14} color="#A78BFA" />
+            </TouchableOpacity>
           </View>
         )}
       </ScrollView>
@@ -172,11 +193,11 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 5,
   },
-  nightNumber: {
-    fontSize: 20,
+  nightTitle: {
+    fontSize: 17,
     fontWeight: '800',
     color: Colors.text,
-    letterSpacing: -0.3,
+    letterSpacing: -0.2,
   },
   nightMeta: {
     flexDirection: 'row',
@@ -218,17 +239,12 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#D8D2EA',
   },
-  nightDate: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#6E6582',
-  },
   nightChevron: {
     flexShrink: 0,
     paddingLeft: 4,
   },
   emptyCard: {
-    minHeight: 220,
+    minHeight: 280,
     borderRadius: Radius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(214, 203, 255, 0.22)',
@@ -250,8 +266,32 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 20,
-    fontWeight: '700',
-    color: '#C7C0D8',
+    fontWeight: '800',
+    color: Colors.text,
     textAlign: 'center',
+  },
+  emptyText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#9B91B8',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  emptyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: Spacing.sm,
+    paddingVertical: 10,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(124, 92, 255, 0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.35)',
+  },
+  emptyBtnText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#A78BFA',
   },
 });

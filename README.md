@@ -1,8 +1,6 @@
 # NiteDeck
 
-NiteDeck is a mobile party game with Chill, Spicy and Wild modes, plus camera moments and a session recap.
-
-This project is an MVP.
+NiteDeck is a mobile party game with Chill, Spicy and Wild modes, camera moments, and a session recap that saves to Memories.
 
 ## Install
 
@@ -16,4 +14,8 @@ npm install
 npx expo start
 ```
 
-From the Expo CLI, open the app in Expo Go, a development build, an Android emulator, an iOS simulator, or web.
+Open the app in Expo Go or a development build. A real device is recommended for camera and media features.
+
+## Beta testing
+
+See [BETA_TESTING.md](./BETA_TESTING.md) for the full testing checklist, known limitations, and feedback guide.

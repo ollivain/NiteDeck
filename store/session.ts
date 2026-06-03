@@ -26,6 +26,7 @@ export type MediaMoment = {
 export type SavedNight = {
   id: string;
   createdAt: string;
+  title?: string;
   gameType: GameType;
   mode: Mode;
   players: string[];
@@ -70,6 +71,8 @@ type SessionStore = {
   endGame: () => void;
   addMedia: (uri: string, mediaType?: MediaType) => void;
   saveCurrentNight: () => SavedNight | null;
+  renameNight: (id: string, title: string) => void;
+  deleteNight: (id: string) => void;
   clearSavedNights: () => void;
   reset: () => void;
 };
@@ -325,6 +328,14 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     set(s => ({ savedNights: [night, ...s.savedNights] }));
     return night;
   },
+
+  renameNight: (id: string, title: string) =>
+    set(s => ({
+      savedNights: s.savedNights.map(n => (n.id === id ? { ...n, title: title.trim() || undefined } : n)),
+    })),
+
+  deleteNight: (id: string) =>
+    set(s => ({ savedNights: s.savedNights.filter(n => n.id !== id) })),
 
   clearSavedNights: () => set({ savedNights: [] }),
 

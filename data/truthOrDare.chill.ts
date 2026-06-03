@@ -321,4 +321,28 @@ export const chillTruthOrDareCards: TruthOrDareCard[] = [
     text: 'Do a ten-second commercial for yourself. Make it convincing.',
     intensity: 1,
   },
+
+  // tod-ch-truth-021 to tod-ch-truth-030
+  { id: 'tod-ch-truth-021', mode: 'chill', choice: 'truth', label: 'TRUTH', text: "Name the last song you played on repeat that you'd rather not admit to.", intensity: 1 },
+  { id: 'tod-ch-truth-022', mode: 'chill', choice: 'truth', label: 'TRUTH', text: "What's something you're genuinely bad at but pretend is not a problem?", intensity: 1 },
+  { id: 'tod-ch-truth-023', mode: 'chill', choice: 'truth', label: 'TRUTH', text: "What's your most chaotic 'works for me' life hack?", intensity: 1 },
+  { id: 'tod-ch-truth-024', mode: 'chill', choice: 'truth', label: 'TRUTH', text: 'Name the last time you laughed so hard you had to physically stop.', intensity: 1 },
+  { id: 'tod-ch-truth-025', mode: 'chill', choice: 'truth', label: 'TRUTH', text: "What's something you've been meaning to reply to for way too long?", intensity: 1 },
+  { id: 'tod-ch-truth-026', mode: 'chill', choice: 'truth', label: 'TRUTH', text: "Admit one show or app you secretly use to wind down.", intensity: 1 },
+  { id: 'tod-ch-truth-027', mode: 'chill', choice: 'truth', label: 'TRUTH', text: "What's the most niche thing you're quietly obsessed with right now?", intensity: 1 },
+  { id: 'tod-ch-truth-028', mode: 'chill', choice: 'truth', label: 'TRUTH', text: 'Name something you do differently from everyone else that you think is actually correct.', intensity: 1 },
+  { id: 'tod-ch-truth-029', mode: 'chill', choice: 'truth', label: 'TRUTH', text: 'What would your pet — real or hypothetical — most complain about you for?', intensity: 1 },
+  { id: 'tod-ch-truth-030', mode: 'chill', choice: 'truth', label: 'TRUTH', text: 'Name one thing currently in your fridge that says a lot about you as a person.', intensity: 1 },
+
+  // tod-ch-dare-021 to tod-ch-dare-030
+  { id: 'tod-ch-dare-021', mode: 'chill', choice: 'dare', label: 'DARE', text: 'Do your best impression of someone in this group ordering food. No names — let everyone guess.', intensity: 1 },
+  { id: 'tod-ch-dare-022', mode: 'chill', choice: 'dare', label: 'DARE', text: 'Show the group your most recent search bar suggestion. One sentence of context only.', intensity: 1 },
+  { id: 'tod-ch-dare-023', mode: 'chill', choice: 'dare', label: 'DARE', text: "Pick a person here. Describe their aesthetic in exactly three words.", intensity: 1 },
+  { id: 'tod-ch-dare-024', mode: 'chill', choice: 'dare', label: 'DARE', text: 'Do a 10-second weather forecast for the rest of tonight.', intensity: 1 },
+  { id: 'tod-ch-dare-025', mode: 'chill', choice: 'dare', label: 'DARE', text: 'Show your home screen wallpaper. Explain it.', intensity: 1 },
+  { id: 'tod-ch-dare-026', mode: 'chill', choice: 'dare', label: 'DARE', text: "Text your most recent contact a single emoji right now. The group picks which one you send.", intensity: 1 },
+  { id: 'tod-ch-dare-027', mode: 'chill', choice: 'dare', label: 'DARE', text: 'Stand up and take a bow for something genuinely impressive about yourself.', intensity: 1 },
+  { id: 'tod-ch-dare-028', mode: 'chill', choice: 'dare', label: 'DARE', text: "Explain the last show you watched as if pitching it to someone who hates television.", intensity: 1 },
+  { id: 'tod-ch-dare-029', mode: 'chill', choice: 'dare', label: 'DARE', text: 'Use your best cheerful customer service voice to describe how tonight is going. 15 seconds.', intensity: 1 },
+  { id: 'tod-ch-dare-030', mode: 'chill', choice: 'dare', label: 'DARE', text: "Pick someone here and assign them a theme song for this evening. Hum it or name it.", intensity: 1 },
 ];

@@ -2,14 +2,36 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { premiumPacks } from '@/data/packs';
+import type { PackId } from '@/data/types';
 
-const PACKS = [
-  'Temptations',
-  'Roast',
-  'Truth Bombs',
-  'Couples & Chemistry',
-  'After Dark',
-] as const;
+const PACK_TEASERS: Record<PackId, string[]> = {
+  temptations: [
+    '"Would you rather kiss someone here or let the group decide who?"',
+    '"Pick someone in the room. Tell them one thing you find genuinely attractive about them."',
+    '"Rate your current romantic life from 1 to 10. Justify it."',
+  ],
+  roast: [
+    '"Everyone points to the person with the worst fashion sense. They have 20 seconds to defend it."',
+    '"Roast the person on your left in exactly two sentences. Keep it friendly."',
+    '"Vote on who would win a petty argument. They get to prove it right now."',
+  ],
+  'truth-bombs': [
+    '"Name something about yourself you have never admitted in a group setting."',
+    '"What is the most honest thing you could say about someone in this room?"',
+    '"Pick someone. Ask them anything. They have to answer in full."',
+  ],
+  'couples-chemistry': [
+    '"What is one small thing your person does that you hope they never stop?"',
+    '"Describe your ideal night with someone in two sentences. No clichés."',
+    '"Pick someone here. Tell them what you genuinely admire about how they love people."',
+  ],
+  'after-dark': [
+    '"What is the most reckless thing you have done this year that you would do again?"',
+    '"Admit something you only do after midnight."',
+    '"Name a moment tonight that would make a good opening scene for a film."',
+  ],
+};
 
 export default function ShopScreen() {
   return (
@@ -28,22 +50,42 @@ export default function ShopScreen() {
             <Ionicons name="sparkles" size={22} color="#A78BFA" />
           </View>
           <View style={styles.noticeCopy}>
-            <Text style={styles.noticeTitle}>Premium packs coming soon</Text>
-            <Text style={styles.noticeText}>No purchases or payment flows are available yet.</Text>
+            <Text style={styles.noticeTitle}>Core game is free</Text>
+            <Text style={styles.noticeText}>
+              Premium packs are in development. Temptations, Roast, Truth Bombs and more are on the way.
+            </Text>
           </View>
         </View>
 
         <View style={styles.packGrid}>
-          {PACKS.map(pack => (
-            <View key={pack} style={styles.packCard}>
-              <View style={styles.packGlow} />
-              <View style={styles.lockIcon}>
-                <Ionicons name="lock-closed" size={18} color="#D8D2EA" />
+          {premiumPacks.map(pack => {
+            const teasers = PACK_TEASERS[pack.id] ?? [];
+            return (
+              <View key={pack.id} style={styles.packCard}>
+                <View style={styles.packGlow} />
+                <View style={styles.packHeader}>
+                  <View style={styles.lockIcon}>
+                    <Ionicons name="lock-closed" size={18} color="#D8D2EA" />
+                  </View>
+                  <View style={styles.comingSoonBadge}>
+                    <Text style={styles.comingSoonText}>Coming soon</Text>
+                  </View>
+                </View>
+                <Text style={styles.packTitle}>{pack.title}</Text>
+                <Text style={styles.packDescription}>{pack.description}</Text>
+                {teasers.length > 0 && (
+                  <View style={styles.teaserList}>
+                    {teasers.map((teaser, i) => (
+                      <View key={i} style={styles.teaserRow}>
+                        <View style={styles.teaserDot} />
+                        <Text style={styles.teaserText}>{teaser}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
               </View>
-              <Text style={styles.packTitle}>{pack}</Text>
-              <Text style={styles.packStatus}>Coming soon</Text>
-            </View>
-          ))}
+            );
+          })}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -108,7 +150,6 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   packCard: {
-    minHeight: 124,
     borderRadius: Radius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(214, 203, 255, 0.18)',
@@ -125,6 +166,12 @@ const styles = StyleSheet.create({
     top: -76,
     right: -36,
   },
+  packHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.md,
+  },
   lockIcon: {
     width: 38,
     height: 38,
@@ -134,20 +181,59 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(214, 203, 255, 0.16)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.md,
+  },
+  comingSoonBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(167, 139, 250, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.3)',
+  },
+  comingSoonText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#A78BFA',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   packTitle: {
     fontSize: 21,
     fontWeight: '800',
     color: Colors.text,
     fontFamily: 'serif',
+    marginBottom: 6,
   },
-  packStatus: {
-    marginTop: 5,
+  packDescription: {
+    fontSize: 13,
+    color: '#C7C0D8',
+    lineHeight: 19,
+    marginBottom: Spacing.md,
+  },
+  teaserList: {
+    gap: 8,
+    paddingTop: 4,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(214, 203, 255, 0.1)',
+  },
+  teaserRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  teaserDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#7C5CFF',
+    marginTop: 7,
+    flexShrink: 0,
+  },
+  teaserText: {
+    flex: 1,
     fontSize: 12,
-    fontWeight: '800',
-    color: '#A78BFA',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
+    color: '#9B91B8',
+    lineHeight: 18,
+    fontStyle: 'italic',
   },
 });

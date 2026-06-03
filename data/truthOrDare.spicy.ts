@@ -321,4 +321,28 @@ export const spicyTruthOrDareCards: TruthOrDareCard[] = [
     text: 'Describe the character you\'d play if this group was a reality show. Be honest.',
     intensity: 2,
   },
+
+  // tod-sp-truth-021 to tod-sp-truth-030
+  { id: 'tod-sp-truth-021', mode: 'spicy', choice: 'truth', label: 'TRUTH', text: "Admit the pettiest thought you've had about someone in the last week.", intensity: 2 },
+  { id: 'tod-sp-truth-022', mode: 'spicy', choice: 'truth', label: 'TRUTH', text: "Name someone you've unfollowed or muted recently without telling them why.", intensity: 2 },
+  { id: 'tod-sp-truth-023', mode: 'spicy', choice: 'truth', label: 'TRUTH', text: "What's something you've exaggerated to sound more interesting?", intensity: 2 },
+  { id: 'tod-sp-truth-024', mode: 'spicy', choice: 'truth', label: 'TRUTH', text: "Admit the last time you pretended to be busier than you actually were.", intensity: 2 },
+  { id: 'tod-sp-truth-025', mode: 'spicy', choice: 'truth', label: 'TRUTH', text: "What's a recurring thought you've never said out loud to anyone?", intensity: 2 },
+  { id: 'tod-sp-truth-026', mode: 'spicy', choice: 'truth', label: 'TRUTH', text: "Admit the last time you were clearly the difficult one in a situation.", intensity: 2 },
+  { id: 'tod-sp-truth-027', mode: 'spicy', choice: 'truth', label: 'TRUTH', text: "Name something you said recently that you meant as a compliment but know it didn't land that way.", intensity: 2 },
+  { id: 'tod-sp-truth-028', mode: 'spicy', choice: 'truth', label: 'TRUTH', text: "What's a small line you crossed recently — even a minor one — that you haven't mentioned?", intensity: 2 },
+  { id: 'tod-sp-truth-029', mode: 'spicy', choice: 'truth', label: 'TRUTH', text: "Name a post you liked online this week while being privately glad you didn't make it yourself.", intensity: 2 },
+  { id: 'tod-sp-truth-030', mode: 'spicy', choice: 'truth', label: 'TRUTH', text: "Name something you've been called out for that you still secretly think you were right about.", intensity: 2 },
+
+  // tod-sp-dare-021 to tod-sp-dare-030
+  { id: 'tod-sp-dare-021', mode: 'spicy', choice: 'dare', label: 'DARE', text: "Show your most recently deleted app and explain why it had to go.", intensity: 2 },
+  { id: 'tod-sp-dare-022', mode: 'spicy', choice: 'dare', label: 'DARE', text: "Pick someone here. Tell them something they do that you've noticed but never commented on.", intensity: 2 },
+  { id: 'tod-sp-dare-023', mode: 'spicy', choice: 'dare', label: 'DARE', text: "Rank three players in this room from most likely to cancel plans to least. Say it out loud.", intensity: 2 },
+  { id: 'tod-sp-dare-024', mode: 'spicy', choice: 'dare', label: 'DARE', text: "Show the group your battery percentage and explain whether it reflects how you're doing right now.", intensity: 2 },
+  { id: 'tod-sp-dare-025', mode: 'spicy', choice: 'dare', label: 'DARE', text: "Describe someone in this group in one sentence as if you're a witness in their trial.", intensity: 2 },
+  { id: 'tod-sp-dare-026', mode: 'spicy', choice: 'dare', label: 'DARE', text: "Read out the label of your most recently set alarm. Explain what it was actually for.", intensity: 2 },
+  { id: 'tod-sp-dare-027', mode: 'spicy', choice: 'dare', label: 'DARE', text: "Name someone in this room and explain why you'd cast them as the antagonist of a movie.", intensity: 2 },
+  { id: 'tod-sp-dare-028', mode: 'spicy', choice: 'dare', label: 'DARE', text: "Show the most boring photo on your camera roll. Explain why you kept it.", intensity: 2 },
+  { id: 'tod-sp-dare-029', mode: 'spicy', choice: 'dare', label: 'DARE', text: "Tell the group one thing about yourself that took you a long time to actually own.", intensity: 2 },
+  { id: 'tod-sp-dare-030', mode: 'spicy', choice: 'dare', label: 'DARE', text: "Show your most recent search. The group guesses what led up to it.", intensity: 2 },
 ];
