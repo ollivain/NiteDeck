@@ -71,7 +71,7 @@ export default function RulesScreen() {
       return;
     }
 
-    router.push(gameType === 'classic' ? '/game' : '/truth-or-dare');
+    router.push(gameType === 'truthOrDare' ? '/truth-or-dare' : '/game');
   };
 
   if (!gameType) {
@@ -88,7 +88,7 @@ export default function RulesScreen() {
         <View>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
-              <Ionicons name="arrow-back" size={20} color="#C7C0D8" />
+              <Ionicons name="arrow-back" size={20} color={Colors.textMuted} />
             </TouchableOpacity>
           </View>
 
@@ -136,7 +136,7 @@ export default function RulesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050817',
+    backgroundColor: Colors.bg,
   },
   scroll: {
     flex: 1,
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.14)',
+    borderColor: Colors.borderSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
     paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(214, 203, 255, 0.08)',
+    borderBottomColor: Colors.borderSubtle,
   },
   ruleRowLast: {
     borderBottomWidth: 0,

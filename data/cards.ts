@@ -1,17 +1,27 @@
 import { chillCards } from './cards.chill';
 import { spicyCards } from './cards.spicy';
 import { wildCards } from './cards.wild';
+import { neverHaveIEverCards } from './cards.neverHaveIEver';
 import { temptationsCards } from './cards.temptations';
 import { roastCards } from './cards.roast';
 import { truthBombsCards } from './cards.truthBombs';
 import { couplesChemistryCards } from './cards.couplesChemistry';
 import { afterDarkCards } from './cards.afterDark';
-import type { Card, PackId, PremiumCard } from './types';
+import type { Card, GameType, PackId, PremiumCard } from './types';
 
 export const allCards: Card[] = [...chillCards, ...spicyCards, ...wildCards];
 
+export const coreCardsByGameType: Record<Exclude<GameType, 'truthOrDare'>, Card[]> = {
+  classic: allCards,
+  neverHaveIEver: neverHaveIEverCards,
+};
+
+export function getCoreCardsForGameType(gameType: GameType): Card[] {
+  return gameType === 'truthOrDare' ? [] : coreCardsByGameType[gameType];
+}
+
 export const cardsById: Record<string, Card> = Object.fromEntries(
-  allCards.map(c => [c.id, c])
+  [...allCards, ...neverHaveIEverCards].map(c => [c.id, c])
 );
 
 export const premiumCardsByPack: Record<PackId, PremiumCard[]> = {

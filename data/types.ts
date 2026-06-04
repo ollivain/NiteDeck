@@ -1,4 +1,4 @@
-export type GameType = 'classic' | 'truth-or-dare';
+export type GameType = 'classic' | 'truthOrDare' | 'neverHaveIEver';
 export type Mode = 'chill' | 'spicy' | 'wild';
 export type TruthOrDareChoice = 'truth' | 'dare';
 export type PackId =
@@ -15,6 +15,7 @@ export type CardSourceKind = 'core-mode' | 'premium-pack';
 export type CardSourceId = Mode | PackId;
 export type CardType = 'question' | 'vote' | 'pick' | 'challenge' | 'camera' | 'chaos';
 export type CardIntensity = 1 | 2 | 3;
+export type CaptureType = 'photo' | 'video' | 'camera';
 
 export type CardSourceMetadata = {
   id: CardSourceId;
@@ -45,6 +46,7 @@ export type PremiumCard = {
   label: string;
   text: string;
   intensity?: CardIntensity;
+  captureType?: CaptureType;
 };
 
 export type Card = {
@@ -54,6 +56,7 @@ export type Card = {
   label: string;
   text: string;
   intensity?: CardIntensity;
+  captureType?: CaptureType;
 };
 
 export type TruthOrDareCard = {
@@ -63,4 +66,5 @@ export type TruthOrDareCard = {
   label: 'TRUTH' | 'DARE';
   text: string;
   intensity?: CardIntensity;
+  captureType?: CaptureType;
 };

@@ -200,6 +200,7 @@ export const wildTruthOrDareCards: TruthOrDareCard[] = [
     label: 'DARE',
     text: 'Film a 10-second breaking news report about something that just happened in this room.',
     intensity: 3,
+    captureType: 'video',
   },
   {
     id: 'tod-wi-dare-006',
@@ -248,6 +249,7 @@ export const wildTruthOrDareCards: TruthOrDareCard[] = [
     label: 'DARE',
     text: 'Film a 10-second fake apology to someone outside this room. The group picks who. Do not send it.',
     intensity: 3,
+    captureType: 'video',
   },
   {
     id: 'tod-wi-dare-012',
@@ -304,6 +306,7 @@ export const wildTruthOrDareCards: TruthOrDareCard[] = [
     label: 'DARE',
     text: 'Record a 10-second confessional like you\'re in a reality show diary room. The group picks the topic.',
     intensity: 3,
+    captureType: 'video',
   },
   {
     id: 'tod-wi-dare-019',
@@ -312,6 +315,7 @@ export const wildTruthOrDareCards: TruthOrDareCard[] = [
     label: 'DARE',
     text: 'Take a photo right now on your camera. Show it. The group writes the caption.',
     intensity: 3,
+    captureType: 'photo',
   },
   {
     id: 'tod-wi-dare-020',
@@ -342,17 +346,17 @@ export const wildTruthOrDareCards: TruthOrDareCard[] = [
   // tod-wi-dare-021 to tod-wi-dare-035
   { id: 'tod-wi-dare-021', mode: 'wild', choice: 'dare', label: 'DARE', text: "Open your sent folder. Read the first subject line visible. The group writes the email body.", intensity: 3 },
   { id: 'tod-wi-dare-022', mode: 'wild', choice: 'dare', label: 'DARE', text: "Show a notification badge count on any app. The group guesses what's in the backlog.", intensity: 3 },
-  { id: 'tod-wi-dare-023', mode: 'wild', choice: 'dare', label: 'DARE', text: "Film a 10-second voicemail for someone who wronged you this year. Do not send it.", intensity: 3 },
+  { id: 'tod-wi-dare-023', mode: 'wild', choice: 'dare', label: 'DARE', text: "Film a 10-second voicemail for someone who wronged you this year. Do not send it.", intensity: 3, captureType: 'video' },
   { id: 'tod-wi-dare-024', mode: 'wild', choice: 'dare', label: 'DARE', text: "Open your contacts and scroll without looking. Stop randomly. Read the name. Group invents the story.", intensity: 3 },
   { id: 'tod-wi-dare-025', mode: 'wild', choice: 'dare', label: 'DARE', text: "Act out a dramatic goodbye scene from a movie. The group plays the people you're leaving behind.", intensity: 3 },
   { id: 'tod-wi-dare-026', mode: 'wild', choice: 'dare', label: 'DARE', text: "Show your battery usage screen. Pick your second-highest app. Justify your life choices.", intensity: 3 },
   { id: 'tod-wi-dare-027', mode: 'wild', choice: 'dare', label: 'DARE', text: "Read out the label of the last alarm you set on your phone.", intensity: 3 },
   { id: 'tod-wi-dare-028', mode: 'wild', choice: 'dare', label: 'DARE', text: "Open your notes app and find the oldest note that still makes no sense. Read it aloud.", intensity: 3 },
-  { id: 'tod-wi-dare-029', mode: 'wild', choice: 'dare', label: 'DARE', text: "Take a photo right now that looks like a crime scene but obviously isn't.", intensity: 3 },
-  { id: 'tod-wi-dare-030', mode: 'wild', choice: 'dare', label: 'DARE', text: "Record a 10-second voiceover for this moment as if it is part of a dramatic documentary about your life.", intensity: 3 },
+  { id: 'tod-wi-dare-029', mode: 'wild', choice: 'dare', label: 'DARE', text: "Take a photo right now that looks like a crime scene but obviously isn't.", intensity: 3, captureType: 'photo' },
+  { id: 'tod-wi-dare-030', mode: 'wild', choice: 'dare', label: 'DARE', text: "Record a 10-second voiceover for this moment as if it is part of a dramatic documentary about your life.", intensity: 3, captureType: 'video' },
   { id: 'tod-wi-dare-031', mode: 'wild', choice: 'dare', label: 'DARE', text: "Show the group your most recently googled thing. No filtering the result page.", intensity: 3 },
   { id: 'tod-wi-dare-032', mode: 'wild', choice: 'dare', label: 'DARE', text: "Describe whatever is on your desk, bag, or floor right now as if it is an important art installation.", intensity: 3 },
   { id: 'tod-wi-dare-033', mode: 'wild', choice: 'dare', label: 'DARE', text: "Give a 10-second courtroom defense for the last questionable thing you did this week.", intensity: 3 },
-  { id: 'tod-wi-dare-034', mode: 'wild', choice: 'dare', label: 'DARE', text: "Film a 10-second fake interview where you take full responsibility for something small that happened tonight.", intensity: 3 },
+  { id: 'tod-wi-dare-034', mode: 'wild', choice: 'dare', label: 'DARE', text: "Film a 10-second fake interview where you take full responsibility for something small that happened tonight.", intensity: 3, captureType: 'video' },
   { id: 'tod-wi-dare-035', mode: 'wild', choice: 'dare', label: 'DARE', text: "Show your recent call log with names hidden. The group guesses your week from the call lengths alone.", intensity: 3 },
 ];

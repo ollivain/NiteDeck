@@ -28,7 +28,9 @@ function formatNightDate(createdAt: string) {
 }
 
 function gameTypeLabel(gameType: string) {
-  return gameType === 'truth-or-dare' ? 'Truth or Dare' : 'Classic';
+  if (gameType === 'truthOrDare') return 'Truth or Dare';
+  if (gameType === 'neverHaveIEver') return 'Never Have I Ever';
+  return 'Classic';
 }
 
 function getNightDisplay(night: SavedNight): { primary: string; name: string } {
@@ -46,8 +48,11 @@ function getNightDisplay(night: SavedNight): { primary: string; name: string } {
 function getNightTitle(night: SavedNight, nightNumber: number | null): string {
   if (night.title) return night.title;
   const dateStr = formatNightDate(night.createdAt);
-  if (night.gameType === 'truth-or-dare') {
+  if (night.gameType === 'truthOrDare') {
     return dateStr ? `Truth or Dare · ${dateStr}` : 'Truth or Dare Night';
+  }
+  if (night.gameType === 'neverHaveIEver') {
+    return dateStr ? `Never Have I Ever - ${dateStr}` : 'Never Have I Ever Night';
   }
   const modeLabel = getNightDisplay(night).name;
   return dateStr ? `${modeLabel} Night · ${dateStr}` : `Night #${nightNumber ?? '?'}`;

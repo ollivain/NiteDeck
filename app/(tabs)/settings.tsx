@@ -154,7 +154,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050817',
+    backgroundColor: Colors.bg,
   },
   scrollContent: {
     flexGrow: 1,
@@ -183,8 +183,8 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: Radius.xxl,
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.22)',
-    backgroundColor: 'rgba(10, 15, 39, 0.9)',
+    borderColor: Colors.borderStrong,
+    backgroundColor: Colors.surfaceStrong,
     overflow: 'hidden',
   },
   row: {
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 13,
-    color: '#C7C0D8',
+    color: Colors.textMuted,
     lineHeight: 19,
   },
 });

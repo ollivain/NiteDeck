@@ -78,14 +78,14 @@ export default function ModeScreen() {
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={20} color="#C7C0D8" />
+            <Ionicons name="arrow-back" size={20} color={Colors.textMuted} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.titleBlock}>
           <Text style={styles.title}>
             <Text style={{ color: Colors.text }}>Choose the </Text>
-            <Text style={{ color: '#A78BFA' }}>vibe</Text>
+            <Text style={{ color: Colors.accent }}>vibe</Text>
           </Text>
         </View>
 
@@ -191,7 +191,7 @@ export default function ModeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050817',
+    backgroundColor: Colors.bg,
   },
   scroll: {
     flex: 1,
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.14)',
+    borderColor: Colors.borderSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },

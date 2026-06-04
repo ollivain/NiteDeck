@@ -204,7 +204,7 @@ type MemoryWallProps = {
 function MemoryWall({ gameType, mediaItems, onOpenMedia }: MemoryWallProps) {
   const visibleItems = mediaItems.slice(0, 5);
   const moreCount = Math.max(0, mediaItems.length - visibleItems.length);
-  const isTruthOrDare = gameType === 'truth-or-dare';
+  const isTruthOrDare = gameType === 'truthOrDare';
 
   if (mediaItems.length === 0) {
     return (
@@ -298,7 +298,7 @@ function buildHighlight(
   played: PlayedCard[],
   mediaItems: MediaMoment[]
 ) {
-  if (gameType === 'truth-or-dare') {
+  if (gameType === 'truthOrDare') {
     const completed = played.filter(p => !p.skipped).length;
     const skipped = played.length - completed;
     return {
@@ -375,12 +375,17 @@ export default function RecapScreen() {
   const duration = startedAt && endedAt ? endedAt - startedAt : 0;
   const totalCompleted = played.filter(p => !p.skipped).length;
   const totalSkipped = played.filter(p => p.skipped).length;
-  const isTruthOrDare = gameType === 'truth-or-dare';
+  const isTruthOrDare = gameType === 'truthOrDare';
+  const isNeverHaveIEver = gameType === 'neverHaveIEver';
   const heroCount = isTruthOrDare ? played.length : totalCompleted;
   const heroUnit = isTruthOrDare
     ? heroCount === 1 ? 'turn' : 'turns'
     : heroCount === 1 ? 'card' : 'cards';
-  const recapTitle = isTruthOrDare ? 'TRUTH OR DARE RECAP' : 'NIGHT RECAP';
+  const recapTitle = isTruthOrDare
+    ? 'TRUTH OR DARE RECAP'
+    : isNeverHaveIEver
+      ? 'NEVER HAVE I EVER RECAP'
+      : 'NIGHT RECAP';
   const sessionDisplay = (() => {
     if (selection?.kind === 'pack') {
       const pack = premiumPackMetadata[selection.packId];
@@ -394,6 +399,7 @@ export default function RecapScreen() {
   })();
   const heroSub = (() => {
     if (isTruthOrDare) return 'Truths told. Dares survived.';
+    if (isNeverHaveIEver) return 'Reveals made. Stories unlocked.';
     if (selection?.kind === 'pack') return `${premiumPackMetadata[selection.packId].title} cards played`;
     return mode ? HERO_SUBTITLES[mode] : '';
   })();

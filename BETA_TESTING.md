@@ -19,7 +19,8 @@ Open the app in **Expo Go** or a **development build** on a real device. A real 
 
 ### Core game flow
 - [ ] Home screen loads cleanly (splash plays once, not on every visit)
-- [ ] "Let's Play" and featured game cards both navigate to the games list
+- [ ] "Let's Play" opens the Games hub
+- [ ] Home quick-start cards begin the selected game flow
 - [ ] Adding 2+ players works; fewer than 2 blocks the Continue button
 - [ ] All three modes appear on the Mode screen: Chill, Spicy, Wild
 - [ ] House Rules screen shows before the game starts
@@ -116,6 +117,25 @@ Use this checklist before any payment or purchase integration work. Premium pack
 - [ ] Memory Wall shows correct collage layout for 1, 2, 3, 4+ items
 - [ ] Tapping a memory opens the fullscreen viewer
 - [ ] Share button on a single memory works (or shows an appropriate message)
+
+---
+
+## Launch readiness checklist
+
+- [ ] Test camera permission prompt on a fresh install
+- [ ] Take a photo from a camera card
+- [ ] Record a video from a camera card
+- [ ] Use flash/zoom controls if available on the test device
+- [ ] Complete a Classic game
+- [ ] View Recap
+- [ ] Save a night
+- [ ] Reopen the saved night from Memories
+- [ ] Share a single media item
+- [ ] Preview a premium pack
+- [ ] Scroll the premium preview modal to the final card and CTA
+- [ ] Clear saved nights from Settings
+- [ ] Check small-screen layout
+- [ ] Check iOS and Android if available
 
 ---
 

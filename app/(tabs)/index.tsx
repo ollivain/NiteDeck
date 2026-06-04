@@ -29,12 +29,17 @@ const GAME_OPTIONS: GameOption[] = [
   {
     id: 'classic',
     title: 'Classic',
-    description: 'Group prompts, camera moments and chaotic recaps.',
+    description: 'Cards, votes, dares and camera moments for the whole group.',
   },
   {
-    id: 'truth-or-dare',
+    id: 'truthOrDare',
     title: 'Truth or Dare',
-    description: 'Personal truths, bold dares and party-ready chaos.',
+    description: 'Pick Truth or Dare every turn. Fast, personal and easy to play.',
+  },
+  {
+    id: 'neverHaveIEver',
+    title: 'Never Have I Ever',
+    description: "Reveal what you have and haven't done.",
   },
 ];
 
@@ -86,7 +91,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
         <Text style={styles.splashTitle}>NiteDeck</Text>
         <View style={styles.dividerRow}>
           <View style={styles.divider} />
-          <Ionicons name="sparkles" size={14} color="#A78BFA" />
+          <Ionicons name="sparkles" size={14} color={Colors.accent} />
           <View style={styles.divider} />
         </View>
         <Text style={styles.splashTagline}>Party games. Drinking games.</Text>
@@ -164,7 +169,7 @@ export default function HomeScreen() {
 
             <View style={styles.dividerRow}>
               <View style={styles.divider} />
-              <Ionicons name="sparkles" size={14} color="#A78BFA" />
+              <Ionicons name="sparkles" size={14} color={Colors.accent} />
               <View style={styles.divider} />
             </View>
 
@@ -179,19 +184,22 @@ export default function HomeScreen() {
             pressedScale={0.96}
             style={styles.ctaButton}
           >
-            <Ionicons name="wine-outline" size={20} color="#F7F3FF" />
+            <Ionicons name="wine-outline" size={20} color={Colors.textOnAccent} />
             <Text style={styles.ctaText}>{"Let's Play"}</Text>
           </PressableScale>
 
-          {/* Featured Games */}
+          {/* Quick starts */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Featured Games</Text>
+            <View>
+              <Text style={styles.sectionTitle}>Quick start</Text>
+              <Text style={styles.sectionSubtitle}>Jump straight in or view all game options.</Text>
+            </View>
             <TouchableOpacity
               onPress={() => router.navigate('/(tabs)/games')}
               hitSlop={12}
               activeOpacity={0.7}
             >
-              <Text style={styles.viewAll}>View all ›</Text>
+              <Text style={styles.viewAll}>View games</Text>
             </TouchableOpacity>
           </View>
 
@@ -217,7 +225,7 @@ export default function HomeScreen() {
                         <Text style={styles.miniCardSuit}>♠</Text>
                       </View>
                     </View>
-                  ) : (
+                  ) : option.id === 'truthOrDare' ? (
                     <View style={styles.todVisual}>
                       <View style={styles.bubbleLight}>
                         <Text style={styles.bubbleLightSymbol}>♥</Text>
@@ -225,6 +233,10 @@ export default function HomeScreen() {
                       <View style={styles.bubbleDark}>
                         <Text style={styles.bubbleDarkSymbol}>?</Text>
                       </View>
+                    </View>
+                  ) : (
+                    <View style={styles.nhieVisual}>
+                      <Ionicons name="hand-left-outline" size={34} color="rgba(231, 224, 255, 0.88)" />
                     </View>
                   )}
                 </View>
@@ -259,7 +271,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050817',
+    backgroundColor: Colors.bg,
   },
   splashContent: {
     flex: 1,
@@ -319,29 +331,26 @@ const styles = StyleSheet.create({
   },
   cardLetter: {
     fontSize: 38,
-    fontWeight: '700',
-    color: '#F7F3FF',
-    fontFamily: 'serif',
+    fontWeight: '900',
+    color: Colors.textOnAccent,
   },
   cardLetterLarge: {
     fontSize: 48,
   },
   splashTitle: {
     fontSize: 62,
-    fontWeight: '700',
+    fontWeight: '900',
     color: Colors.text,
     lineHeight: 70,
     textAlign: 'center',
-    fontFamily: 'serif',
   },
   title: {
     fontSize: 60,
-    fontWeight: '700',
+    fontWeight: '900',
     color: Colors.text,
     lineHeight: 68,
     marginBottom: Spacing.sm,
     textAlign: 'center',
-    fontFamily: 'serif',
   },
   dividerRow: {
     flexDirection: 'row',
@@ -375,14 +384,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    backgroundColor: '#7C5CFF',
+    backgroundColor: Colors.accent2,
     borderRadius: Radius.full,
     paddingVertical: 16,
     paddingHorizontal: Spacing.xl,
     marginBottom: Spacing.xxl,
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.45)',
-    shadowColor: '#7C5CFF',
+    shadowColor: Colors.accent2,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.45,
     shadowRadius: 14,
@@ -391,16 +400,17 @@ const styles = StyleSheet.create({
   ctaText: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#F7F3FF',
+    color: Colors.textOnAccent,
     letterSpacing: 0.3,
   },
 
   // Section header
   sectionHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
     marginBottom: Spacing.md,
+    gap: Spacing.md,
   },
   sectionTitle: {
     fontSize: 16,
@@ -411,20 +421,28 @@ const styles = StyleSheet.create({
   viewAll: {
     fontSize: 14,
     color: Colors.accent,
-    fontWeight: '500',
+    fontWeight: '700',
+  },
+  sectionSubtitle: {
+    fontSize: 12,
+    color: Colors.textDim,
+    lineHeight: 17,
+    marginTop: 2,
   },
 
   // Game grid
   gameGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 12,
   },
   gameCard: {
-    flex: 1,
+    width: '47.8%',
+    minWidth: 150,
     borderRadius: Radius.xl,
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.16)',
-    backgroundColor: 'rgba(10, 15, 39, 0.92)',
+    borderColor: Colors.border,
+    backgroundColor: Colors.surfaceStrong,
     padding: Spacing.md,
     overflow: 'hidden',
   },
@@ -466,7 +484,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: 'rgba(231, 224, 255, 0.90)',
-    fontFamily: 'serif',
     lineHeight: 17,
   },
   miniCardSuit: {
@@ -475,6 +492,12 @@ const styles = StyleSheet.create({
     lineHeight: 11,
   },
   todVisual: {
+    width: 68,
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nhieVisual: {
     width: 68,
     height: 52,
     alignItems: 'center',
@@ -515,14 +538,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: 'rgba(231, 224, 255, 0.88)',
-    fontFamily: 'serif',
     lineHeight: 17,
   },
   cardTitle: {
     fontSize: 17,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.text,
-    fontFamily: 'serif',
     lineHeight: 22,
     marginBottom: 8,
   },

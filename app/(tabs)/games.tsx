@@ -11,21 +11,27 @@ type GameOption = {
   id: GameType;
   title: string;
   description: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon?: keyof typeof Ionicons.glyphMap;
 };
 
 const GAME_OPTIONS: GameOption[] = [
   {
     id: 'classic',
     title: 'Classic',
-    description: 'Group prompts, camera moments and chaotic recaps.',
+    description: 'Cards, votes, dares and camera moments for the whole group.',
     icon: 'albums',
   },
   {
-    id: 'truth-or-dare',
+    id: 'truthOrDare',
     title: 'Truth or Dare',
-    description: 'Personal truths, bold dares and party-ready chaos.',
+    description: 'Pick Truth or Dare every turn. Fast, personal and easy to play.',
     icon: 'help-buoy',
+  },
+  {
+    id: 'neverHaveIEver',
+    title: 'Never Have I Ever',
+    description: "Reveal what you have and haven't done.",
+    icon: 'hand-left-outline',
   },
 ];
 
@@ -47,7 +53,8 @@ export default function GamesScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Choose the night</Text>
+          <Text style={styles.title}>Choose a game</Text>
+          <Text style={styles.subtitle}>Pick the format first. The vibe comes next.</Text>
         </View>
 
         <View style={styles.list}>
@@ -59,6 +66,11 @@ export default function GamesScreen() {
               pressedScale={0.985}
               style={styles.gameRow}
             >
+              <View style={styles.iconBox}>
+                {option.icon ? (
+                  <Ionicons name={option.icon} size={22} color={Colors.accent} />
+                ) : null}
+              </View>
               <View style={styles.copy}>
                 <Text style={styles.gameTitle}>{option.title}</Text>
                 <Text style={styles.description}>{option.description}</Text>
@@ -75,7 +87,7 @@ export default function GamesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050817',
+    backgroundColor: Colors.bg,
   },
   scrollContent: {
     flexGrow: 1,
@@ -91,6 +103,11 @@ const styles = StyleSheet.create({
     ...Typography.h1,
     color: Colors.text,
   },
+  subtitle: {
+    fontSize: 14,
+    color: Colors.textDim,
+    lineHeight: 20,
+  },
   list: {
     gap: Spacing.md,
   },
@@ -98,13 +115,24 @@ const styles = StyleSheet.create({
     minHeight: 116,
     borderRadius: Radius.xxl,
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.22)',
-    backgroundColor: 'rgba(10, 15, 39, 0.9)',
+    borderColor: Colors.border,
+    backgroundColor: Colors.surfaceStrong,
     padding: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
     overflow: 'hidden',
+  },
+  iconBox: {
+    width: 46,
+    height: 46,
+    borderRadius: Radius.lg,
+    backgroundColor: Colors.accentBg,
+    borderWidth: 1,
+    borderColor: Colors.accentBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
   },
   copy: {
     flex: 1,
@@ -115,11 +143,10 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: Colors.text,
     lineHeight: 27,
-    fontFamily: 'serif',
   },
   description: {
     fontSize: 14,
-    color: '#C7C0D8',
+    color: Colors.textMuted,
     lineHeight: 20,
   },
 });

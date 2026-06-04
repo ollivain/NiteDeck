@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/Button';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { getCardCaptureIntent } from '@/data/captureIntent';
 import { truthOrDareCardsById } from '@/data/truthOrDare';
 import type { TruthOrDareCard, TruthOrDareChoice } from '@/data/types';
 import { useSessionStore } from '@/store/session';
@@ -27,9 +28,11 @@ function TruthOrDarePromptCard({ card, cardNumber, totalCards }: TruthOrDareProm
   const fontSize = cardFontSize(card.text.length);
   const dots = card.intensity ?? (card.choice === 'truth' ? 2 : 3);
   const choiceIcon = card.choice === 'truth' ? 'chatbubble-ellipses' : 'flash';
+  const captureIntent = getCardCaptureIntent(card);
+  const captureIcon = captureIntent.captureType === 'video' ? 'videocam' : 'camera';
 
   return (
-    <View style={[styles.promptCard, { borderColor: cfg.primary }]}>
+    <View style={[styles.promptCard, { borderColor: cfg.primary }, captureIntent.isCaptureCard && styles.capturePromptCard]}>
       <View style={styles.cardTopRow}>
         <View style={[styles.typeTag, { borderColor: cfg.primary }]}>
           <Ionicons name={choiceIcon} size={12} color={cfg.primary} />
@@ -48,10 +51,24 @@ function TruthOrDarePromptCard({ card, cardNumber, totalCards }: TruthOrDareProm
         </View>
       </View>
 
+      {captureIntent.isCaptureCard && (
+        <View style={styles.cameraMomentBanner}>
+          <View style={styles.cameraMomentIcon}>
+            <Ionicons name={captureIcon} size={15} color={Colors.accent} />
+          </View>
+          <Text style={styles.cameraMomentLabel}>{captureIntent.label}</Text>
+        </View>
+      )}
+
       <View style={styles.textWrap}>
         <Text style={[styles.cardText, { fontSize, lineHeight: fontSize * 1.45 }]}>
           {card.text}
         </Text>
+        {captureIntent.isCaptureCard && (
+          <View style={styles.captureHint}>
+            <Text style={styles.captureHintText}>{captureIntent.hint}</Text>
+          </View>
+        )}
       </View>
 
       <View style={styles.cardFooter}>
@@ -87,12 +104,15 @@ export default function TruthOrDareScreen() {
   const hasStarted = Boolean(startedAt);
   const currentPlayer = players.length > 0 ? players[currentPlayerIndex % players.length] : undefined;
   const currentCard = pendingCardId ? truthOrDareCardsById[pendingCardId] : undefined;
+  const captureIntent = getCardCaptureIntent(currentCard);
+  const isCaptureCard = captureIntent.isCaptureCard;
+  const captureIcon = captureIntent.captureType === 'video' ? 'videocam' : 'camera';
   const totalCards = truthDeck.length + dareDeck.length;
   const truthRemaining = Math.max(0, truthDeck.length - truthIndex);
   const dareRemaining = Math.max(0, dareDeck.length - dareIndex);
   const isDeckEmpty = hasStarted && totalCards > 0 && truthRemaining === 0 && dareRemaining === 0 && !pendingCardId;
   const invalidGameState =
-    gameType !== 'truth-or-dare' ||
+    gameType !== 'truthOrDare' ||
     !hasEnoughPlayers ||
     !mode ||
     !hasStarted ||
@@ -107,7 +127,7 @@ export default function TruthOrDareScreen() {
       return;
     }
 
-    if (gameType !== 'truth-or-dare') {
+    if (gameType !== 'truthOrDare') {
       router.replace('/game-type');
       return;
     }
@@ -280,20 +300,33 @@ export default function TruthOrDareScreen() {
         ) : null}
 
         <View style={styles.cameraRow}>
+          {isCaptureCard && (
+            <View style={styles.cameraHint}>
+              <Text style={styles.cameraHintText}>{captureIntent.hint}</Text>
+            </View>
+          )}
           <PressableScale
             onPress={handleCamera}
             style={[
               styles.cameraFab,
               modeCfg && {
-                shadowColor: modeCfg.primary,
-                borderColor: modeCfg.border,
+                shadowColor: isCaptureCard ? Colors.accent : modeCfg.primary,
+                borderColor: isCaptureCard ? Colors.accent : modeCfg.border,
               },
+              isCaptureCard && styles.cameraFabActive,
             ]}
             activeOpacity={0.75}
             hitSlop={8}
             pressedScale={0.94}
           >
-            <Ionicons name="camera" size={22} color={Colors.text} />
+            <Ionicons
+              name={captureIcon}
+              size={22}
+              color={isCaptureCard ? Colors.accent : Colors.text}
+            />
+            {isCaptureCard && (
+              <Text style={styles.cameraFabLabel}>{captureIntent.actionLabel}</Text>
+            )}
           </PressableScale>
         </View>
 
@@ -466,6 +499,10 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.lg,
     marginBottom: Spacing.sm,
   },
+  capturePromptCard: {
+    borderWidth: 2,
+    backgroundColor: 'rgba(16, 22, 48, 0.96)',
+  },
   cameraRow: {
     alignSelf: 'flex-end',
     width: '100%',
@@ -474,6 +511,22 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: Spacing.sm,
     marginBottom: Spacing.sm,
+  },
+  cameraHint: {
+    maxWidth: 170,
+    flexShrink: 1,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: Colors.accentBorder,
+    backgroundColor: Colors.accentBg,
+  },
+  cameraHintText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.textMuted,
+    lineHeight: 16,
   },
   cameraFab: {
     width: 56,
@@ -487,6 +540,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 5,
+  },
+  cameraFabActive: {
+    width: 116,
+    flexDirection: 'row',
+    gap: 7,
+    borderWidth: 2,
+    backgroundColor: Colors.accentBg,
+    shadowOpacity: 0.65,
+    shadowRadius: 18,
+    elevation: 10,
+  },
+  cameraFabLabel: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: Colors.accent,
+    letterSpacing: 0.2,
   },
   cardTopRow: {
     flexDirection: 'row',
@@ -516,6 +585,34 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: Radius.full,
   },
+  cameraMomentBanner: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: Spacing.lg,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: Colors.accentBorder,
+    backgroundColor: Colors.accentBg,
+  },
+  cameraMomentIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(167, 139, 250, 0.12)',
+  },
+  cameraMomentLabel: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: Colors.accent,
+    letterSpacing: 0.9,
+    textTransform: 'uppercase',
+  },
   textWrap: {
     flex: 1,
     justifyContent: 'center',
@@ -524,6 +621,22 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.text,
     letterSpacing: -0.3,
+  },
+  captureHint: {
+    alignSelf: 'flex-start',
+    marginTop: Spacing.lg,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: Radius.lg,
+    backgroundColor: 'rgba(167, 139, 250, 0.10)',
+    borderWidth: 1,
+    borderColor: Colors.accentBorder,
+  },
+  captureHintText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.textMuted,
+    lineHeight: 18,
   },
   cardFooter: {
     flexDirection: 'row',

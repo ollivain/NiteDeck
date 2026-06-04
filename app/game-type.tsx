@@ -11,21 +11,27 @@ type GameOption = {
   id: GameType;
   title: string;
   description: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon?: keyof typeof Ionicons.glyphMap;
 };
 
 const GAME_OPTIONS: GameOption[] = [
   {
     id: 'classic',
-    title: 'NiteDeck Classic',
-    description: 'Group prompts, camera moments and chaotic recaps.',
+    title: 'Classic',
+    description: 'Cards, votes, dares and camera moments for the whole group.',
     icon: 'albums',
   },
   {
-    id: 'truth-or-dare',
+    id: 'truthOrDare',
     title: 'Truth or Dare',
-    description: 'Personal truths, bold dares and party-ready chaos.',
+    description: 'Pick Truth or Dare every turn. Fast, personal and easy to play.',
     icon: 'help-buoy',
+  },
+  {
+    id: 'neverHaveIEver',
+    title: 'Never Have I Ever',
+    description: "Reveal what you have and haven't done.",
+    icon: 'hand-left-outline',
   },
 ];
 
@@ -46,7 +52,7 @@ export default function GameTypeScreen() {
           <Ionicons name="arrow-back" size={20} color="#D8D2EA" />
         </TouchableOpacity>
         <View style={styles.headerPill}>
-          <Ionicons name="sparkles" size={12} color="#A78BFA" />
+          <Ionicons name="sparkles" size={12} color={Colors.accent} />
           <Text style={styles.stepLabel}>CHOOSE GAME</Text>
         </View>
       </View>
@@ -69,14 +75,16 @@ export default function GameTypeScreen() {
             <View style={styles.cardGlow} />
 
             <View style={styles.iconBox}>
-              <Ionicons name={option.icon} size={26} color="#EEE9FF" />
+              {option.icon ? (
+                <Ionicons name={option.icon} size={26} color="#EEE9FF" />
+              ) : null}
             </View>
 
             <View style={styles.optionText}>
               <Text style={styles.optionTitle}>{option.title}</Text>
               <View style={styles.smallDividerRow}>
                 <View style={styles.smallDivider} />
-                <Ionicons name="sparkles" size={11} color="#A78BFA" />
+                <Ionicons name="sparkles" size={11} color={Colors.accent} />
                 <View style={styles.smallDivider} />
               </View>
               <Text style={styles.optionDescription}>{option.description}</Text>
@@ -94,7 +102,7 @@ export default function GameTypeScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: '#050817',
+    backgroundColor: Colors.bg,
   },
   content: {
     paddingTop: Spacing.md,
@@ -137,18 +145,17 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     ...Typography.label,
-    color: '#A78BFA',
+    color: Colors.accent,
   },
   title: {
     fontSize: 42,
     fontWeight: '800',
     color: Colors.text,
     lineHeight: 46,
-    fontFamily: 'serif',
   },
   subtitle: {
     ...Typography.body,
-    color: '#C7C0D8',
+    color: Colors.textMuted,
   },
   optionList: {
     gap: Spacing.md,
@@ -157,8 +164,8 @@ const styles = StyleSheet.create({
     minHeight: 166,
     borderRadius: Radius.xxl,
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.22)',
-    backgroundColor: 'rgba(10, 15, 39, 0.88)',
+    borderColor: Colors.border,
+    backgroundColor: Colors.surface,
     padding: Spacing.lg,
     overflow: 'hidden',
   },
@@ -191,7 +198,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.text,
     lineHeight: 31,
-    fontFamily: 'serif',
   },
   smallDividerRow: {
     flexDirection: 'row',
@@ -205,7 +211,7 @@ const styles = StyleSheet.create({
   },
   optionDescription: {
     fontSize: 15,
-    color: '#C7C0D8',
+    color: Colors.textMuted,
     lineHeight: 22,
   },
   rightIcon: {

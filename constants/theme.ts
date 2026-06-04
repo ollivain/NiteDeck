@@ -2,13 +2,17 @@ export const Colors = {
   bg: '#050817',
   surface: 'rgba(10, 15, 39, 0.88)',
   surface2: 'rgba(16, 22, 48, 0.92)',
+  surfaceStrong: 'rgba(10, 15, 39, 0.90)',
+  surfaceDeep: 'rgba(7, 12, 34, 0.94)',
   border: 'rgba(214, 203, 255, 0.18)',
   borderStrong: 'rgba(214, 203, 255, 0.30)',
   borderSubtle: 'rgba(214, 203, 255, 0.08)',
+  borderSoft: 'rgba(214, 203, 255, 0.14)',
 
   text: '#F7F3FF',
   textMuted: '#C7C0D8',
   textDim: '#8D86A8',
+  textOnAccent: '#F7F3FF',
 
   accent: '#A78BFA',
   accent2: '#7C5CFF',

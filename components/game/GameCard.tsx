@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import type { CardIntensity, CardType } from '@/data/types';
+import { getCardCaptureIntent } from '@/data/captureIntent';
+import type { CaptureType, CardIntensity, CardType } from '@/data/types';
 
 export type CardDisplayConfig = {
   primary: string;
@@ -14,6 +16,7 @@ type GameCardProps = {
     label: string;
     text: string;
     intensity?: CardIntensity;
+    captureType?: CaptureType;
   };
   displayConfig: CardDisplayConfig;
   cardNumber: number;
@@ -39,9 +42,11 @@ export function GameCard({ card, displayConfig, cardNumber, totalCards }: GameCa
   const { primary, name, emoji } = displayConfig;
   const fontSize = cardFontSize(card.text.length);
   const dots = card.intensity ?? typeDots[card.type];
+  const captureIntent = getCardCaptureIntent(card);
+  const cameraIcon = captureIntent.captureType === 'video' ? 'videocam' : 'camera';
 
   return (
-    <View style={[styles.card, { borderColor: primary }]}>
+    <View style={[styles.card, { borderColor: primary }, captureIntent.isCaptureCard && styles.cameraCard]}>
       <View style={styles.topRow}>
         <View style={[styles.typeTag, { borderColor: primary }]}>
           <Text style={[styles.typeLabel, { color: primary }]}>
@@ -61,10 +66,24 @@ export function GameCard({ card, displayConfig, cardNumber, totalCards }: GameCa
         </View>
       </View>
 
+      {captureIntent.isCaptureCard && (
+        <View style={styles.cameraMomentBanner}>
+          <View style={styles.cameraMomentIcon}>
+            <Ionicons name={cameraIcon} size={15} color={Colors.accent} />
+          </View>
+          <Text style={styles.cameraMomentLabel}>{captureIntent.label}</Text>
+        </View>
+      )}
+
       <View style={styles.textWrap}>
         <Text style={[styles.cardText, { fontSize, lineHeight: fontSize * 1.45 }]}>
           {card.text}
         </Text>
+        {captureIntent.isCaptureCard && (
+          <View style={styles.captureHint}>
+            <Text style={styles.captureHintText}>{captureIntent.hint}</Text>
+          </View>
+        )}
       </View>
 
       <View style={styles.footer}>
@@ -86,6 +105,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.lg,
+  },
+  cameraCard: {
+    borderWidth: 2,
+    backgroundColor: 'rgba(16, 22, 48, 0.96)',
   },
   topRow: {
     flexDirection: 'row',
@@ -112,6 +135,34 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: Radius.full,
   },
+  cameraMomentBanner: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: Spacing.lg,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: Colors.accentBorder,
+    backgroundColor: Colors.accentBg,
+  },
+  cameraMomentIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(167, 139, 250, 0.12)',
+  },
+  cameraMomentLabel: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: Colors.accent,
+    letterSpacing: 0.9,
+    textTransform: 'uppercase',
+  },
   textWrap: {
     flex: 1,
     justifyContent: 'center',
@@ -120,6 +171,22 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.text,
     letterSpacing: -0.3,
+  },
+  captureHint: {
+    alignSelf: 'flex-start',
+    marginTop: Spacing.lg,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: Radius.lg,
+    backgroundColor: 'rgba(167, 139, 250, 0.10)',
+    borderWidth: 1,
+    borderColor: Colors.accentBorder,
+  },
+  captureHintText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.textMuted,
+    lineHeight: 18,
   },
   footer: {
     flexDirection: 'row',

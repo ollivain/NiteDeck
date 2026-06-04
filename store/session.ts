@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { allCards, premiumCardsByPack } from '@/data/cards';
+import { getCoreCardsForGameType, premiumCardsByPack } from '@/data/cards';
 import { truthOrDareCards } from '@/data/truthOrDare';
 import type { GameSelection, GameType, Mode, PackId, TruthOrDareChoice } from '@/data/types';
 
@@ -214,9 +214,9 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
   startGame: () => {
     const { gameType, mode, players, selection } = get();
-    if (!selection || players.length < 2) return false;
+    if (!gameType || !selection || players.length < 2) return false;
 
-    if (gameType === 'truth-or-dare') {
+    if (gameType === 'truthOrDare') {
       if (selection.kind !== 'mode') return false;
       const truthDeck = shuffleArray(
         truthOrDareCards.filter(c => c.mode === mode && c.choice === 'truth')
@@ -244,10 +244,8 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       return true;
     }
 
-    if (gameType !== 'classic') return false;
-
     if (selection.kind === 'mode') {
-      const modeCards = allCards.filter(c => c.mode === selection.mode);
+      const modeCards = getCoreCardsForGameType(gameType).filter(c => c.mode === selection.mode);
       if (modeCards.length === 0) return false;
       const deck = shuffleArray(modeCards).map(c => c.id);
       set({
@@ -268,6 +266,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     }
 
     if (selection.kind === 'pack') {
+      if (gameType !== 'classic') return false;
       const packCards = premiumCardsByPack[selection.packId] ?? [];
       if (packCards.length === 0) return false;
       const deck = shuffleArray(packCards).map(c => c.id);
@@ -293,7 +292,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
   chooseTruthOrDareCard: (choice: TruthOrDareChoice) => {
     const state = get();
-    if (state.gameType !== 'truth-or-dare' || !state.startedAt || state.pendingTruthOrDareCardId) {
+    if (state.gameType !== 'truthOrDare' || !state.startedAt || state.pendingTruthOrDareCardId) {
       return false;
     }
 

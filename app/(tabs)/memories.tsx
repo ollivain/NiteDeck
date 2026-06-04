@@ -14,7 +14,9 @@ function formatNightDate(createdAt: string) {
 }
 
 function gameTypeLabel(night: SavedNight) {
-  return night.gameType === 'truth-or-dare' ? 'Truth or Dare' : 'Classic';
+  if (night.gameType === 'truthOrDare') return 'Truth or Dare';
+  if (night.gameType === 'neverHaveIEver') return 'Never Have I Ever';
+  return 'Classic';
 }
 
 function getNightDisplay(night: SavedNight): { primary: string; name: string } {
@@ -32,8 +34,11 @@ function getNightDisplay(night: SavedNight): { primary: string; name: string } {
 function getNightTitle(night: SavedNight, nightNumber: number): string {
   if (night.title) return night.title;
   const dateStr = formatNightDate(night.createdAt);
-  if (night.gameType === 'truth-or-dare') {
+  if (night.gameType === 'truthOrDare') {
     return dateStr ? `Truth or Dare - ${dateStr}` : 'Truth or Dare Night';
+  }
+  if (night.gameType === 'neverHaveIEver') {
+    return dateStr ? `Never Have I Ever - ${dateStr}` : 'Never Have I Ever Night';
   }
   const modeLabel = getNightDisplay(night).name;
   return dateStr ? `${modeLabel} Night - ${dateStr}` : `Night #${nightNumber}`;
@@ -58,11 +63,11 @@ function SavedNightCard({ night, nightNumber, onPress }: SavedNightCardProps) {
           <Image source={{ uri: firstMedia.uri }} style={styles.previewImage} resizeMode="cover" />
         ) : firstMedia?.mediaType === 'video' ? (
           <View style={styles.videoPreview}>
-            <Ionicons name="play" size={22} color="#A78BFA" />
+            <Ionicons name="play" size={22} color={Colors.accent} />
           </View>
         ) : (
           <View style={styles.noMediaPreview}>
-            <Ionicons name="moon" size={24} color="#A78BFA" />
+            <Ionicons name="moon" size={24} color={Colors.accent} />
           </View>
         )}
       </View>
@@ -79,7 +84,7 @@ function SavedNightCard({ night, nightNumber, onPress }: SavedNightCardProps) {
         <View style={styles.nightFooter}>
           {mediaCount > 0 ? (
             <View style={styles.memoryPill}>
-              <Ionicons name="images-outline" size={11} color="#A78BFA" />
+              <Ionicons name="images-outline" size={11} color={Colors.accent} />
               <Text style={styles.memoryPillText}>
                 {mediaCount} {mediaCount === 1 ? 'memory' : 'memories'}
               </Text>
@@ -125,7 +130,7 @@ export default function MemoriesScreen() {
         ) : (
           <View style={styles.emptyCard}>
             <View style={styles.emptyIcon}>
-              <Ionicons name="images" size={26} color="#A78BFA" />
+              <Ionicons name="images" size={26} color={Colors.accent} />
             </View>
             <Text style={styles.emptyTitle}>No nights saved yet</Text>
             <Text style={styles.emptyText}>
@@ -137,7 +142,7 @@ export default function MemoriesScreen() {
               activeOpacity={0.82}
             >
               <Text style={styles.emptyBtnText}>Play now</Text>
-              <Ionicons name="arrow-forward" size={14} color="#A78BFA" />
+              <Ionicons name="arrow-forward" size={14} color={Colors.accent} />
             </TouchableOpacity>
           </View>
         )}
@@ -149,7 +154,7 @@ export default function MemoriesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050817',
+    backgroundColor: Colors.bg,
   },
   scrollContent: {
     flexGrow: 1,
@@ -180,8 +185,8 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     borderRadius: Radius.xl,
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.18)',
-    backgroundColor: 'rgba(10, 15, 39, 0.9)',
+    borderColor: Colors.border,
+    backgroundColor: Colors.surfaceStrong,
   },
   nightPreview: {
     width: 72,
@@ -226,7 +231,7 @@ const styles = StyleSheet.create({
   nightGameType: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#C7C0D8',
+    color: Colors.textMuted,
   },
   nightDot: {
     fontSize: 13,
@@ -266,8 +271,8 @@ const styles = StyleSheet.create({
     minHeight: 280,
     borderRadius: Radius.xxl,
     borderWidth: 1,
-    borderColor: 'rgba(214, 203, 255, 0.22)',
-    backgroundColor: 'rgba(10, 15, 39, 0.9)',
+    borderColor: Colors.borderStrong,
+    backgroundColor: Colors.surfaceStrong,
     padding: Spacing.xl,
     alignItems: 'center',
     justifyContent: 'center',
@@ -311,6 +316,6 @@ const styles = StyleSheet.create({
   emptyBtnText: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#A78BFA',
+    color: Colors.accent,
   },
 });

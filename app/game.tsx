@@ -16,7 +16,8 @@ import { Button } from '@/components/ui/Button';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useSessionStore } from '@/store/session';
-import { cardsById, premiumCardsById } from '@/data/cards';
+import { getCardById } from '@/data/cards';
+import { getCardCaptureIntent } from '@/data/captureIntent';
 import { premiumPackMetadata } from '@/data/packs';
 import type { CardDisplayConfig } from '@/components/game/GameCard';
 
@@ -41,16 +42,16 @@ export default function GameScreen() {
   const cardScale = useSharedValue(1);
   const cardTranslateY = useSharedValue(0);
   const currentPlayer = players.length > 0 ? players[currentPlayerIndex % players.length] : undefined;
-  const rawCard = deck[deckIndex]
-    ? (cardsById[deck[deckIndex]] ?? premiumCardsById[deck[deckIndex]])
-    : undefined;
+  const rawCard = deck[deckIndex] ? getCardById(deck[deckIndex]) : undefined;
   const currentCard = rawCard;
+  const captureIntent = getCardCaptureIntent(currentCard);
   const hasEnoughPlayers = players.length >= 2;
   const hasStarted = Boolean(startedAt);
-  const isCameraCard = currentCard?.type === 'camera';
+  const isCameraCard = captureIntent.isCaptureCard;
+  const isVideoCameraCard = captureIntent.captureType === 'video';
   const isDeckEmpty = hasStarted && deck.length > 0 && deckIndex >= deck.length;
   const invalidGameState =
-    gameType !== 'classic' ||
+    (gameType !== 'classic' && gameType !== 'neverHaveIEver') ||
     !hasEnoughPlayers ||
     !selection ||
     !hasStarted ||
@@ -67,7 +68,7 @@ export default function GameScreen() {
   }));
 
   useFocusEffect(useCallback(() => {
-    if (gameType !== 'classic') {
+    if (gameType !== 'classic' && gameType !== 'neverHaveIEver') {
       router.replace('/game-type');
       return;
     }
@@ -187,7 +188,9 @@ export default function GameScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.emptyState}>
           <Text style={styles.emptyEmoji}>🎴</Text>
-          <Text style={styles.emptyTitle}>Deck is empty!</Text>
+          <Text style={styles.emptyTitle}>
+            {gameType === 'neverHaveIEver' ? 'Never Have I Ever complete!' : 'Deck is empty!'}
+          </Text>
           <Text style={styles.emptySubtitle}>
             You crushed {played.length} card{played.length !== 1 ? 's' : ''}.{'\n'}Time for the recap.
           </Text>
@@ -249,7 +252,9 @@ export default function GameScreen() {
         <View style={styles.cameraRow}>
           {isCameraCard && (
             <View style={styles.cameraHint}>
-              <Text style={styles.cameraHintText}>Tap the camera to save this moment</Text>
+              <Text style={styles.cameraHintText}>
+                {captureIntent.hint}
+              </Text>
             </View>
           )}
           <PressableScale
@@ -266,8 +271,14 @@ export default function GameScreen() {
             hitSlop={8}
             pressedScale={0.94}
           >
-            <Ionicons name="camera" size={22} color={isCameraCard ? Colors.accent : Colors.text} />
-            {isCameraCard && <Text style={styles.cameraFabLabel}>Capture</Text>}
+            <Ionicons
+              name={isVideoCameraCard ? 'videocam' : 'camera'}
+              size={22}
+              color={isCameraCard ? Colors.accent : Colors.text}
+            />
+            {isCameraCard && (
+              <Text style={styles.cameraFabLabel}>{captureIntent.actionLabel}</Text>
+            )}
           </PressableScale>
         </View>
 
@@ -421,11 +432,11 @@ const styles = StyleSheet.create({
     width: 116,
     flexDirection: 'row',
     gap: 7,
-    borderWidth: 1.5,
+    borderWidth: 2,
     backgroundColor: Colors.accentBg,
-    shadowOpacity: 0.45,
-    shadowRadius: 14,
-    elevation: 8,
+    shadowOpacity: 0.65,
+    shadowRadius: 18,
+    elevation: 10,
   },
   cameraFabLabel: {
     fontSize: 13,
